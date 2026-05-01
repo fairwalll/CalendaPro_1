@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Планер продуктивности</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f0f13;
+      color: #e8e8f0;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      padding: 20px 30px;
+      border-bottom: 1px solid #2a2a4a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      background: linear-gradient(90deg, #7c6aff, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .date-badge {
+      background: #2a2a4a;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      color: #a0a0c0;
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+      padding: 16px 30px;
+      background: #12121a;
+      border-bottom: 1px solid #1e1e30;
+      overflow-x: auto;
+    }
+
+    nav button {
+      background: #1e1e30;
+      border: 1px solid #2a2a4a;
+      color: #a0a0c0;
+      padding: 8px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 13px;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    nav button.active, nav button:hover {
+      background: #7c6aff;
+      border-color: #7c6aff;
+      color: white;
+    }
+
+    .container { padding: 24px 30px; max-width: 1100px; margin: 0 auto; }
+
+    /* Статистика */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: #1a1a2e;
+      border: 1px solid #2a2a4a;
+      border-radius: 14px;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .stat-card .number {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .stat-card .label { font-size: 12px; color: #6060a0; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-card.total .number { color: #7c6aff; }
+    .stat-card.done .number { color: #34d399; }
+    .stat-card.working .number { color: #60a5fa; }
+    .stat-card.overdue .number { color: #f87171; }
+
+    /* Прогресс */
+    .progress-bar {
+      background: #1e1e30;
+      border-radius: 10px;
+      height: 8px;
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #7c6aff, #34d399);
+      border-radius: 10px;
+      transition: width 1s ease;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #6060a0;
+      margin-bottom: 8px;
+    }
+
+    /* Фильтры */
+    .filters {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: #1e1e30;
+      border: 1px solid #2a2a4a;
+      color: #a0a0c0;
+      padding: 6px 14px;
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+
+    .filter-btn.active { background: #2a2a4a; color: white; border-color: #7c6aff; }
+
+    /* Задачи */
+    .tasks-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .task-item {
+      background: #1a1a2e;
+      border: 1px solid #2a2a4a;
+      border-radius: 12px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .task-item:hover { border-color: #7c6aff; transform: translateY(-1px); }
+    .task-item.overdue { border-left: 3px solid #f87171; }
+    .task-item.today { border-left: 3px solid #fbbf24; }
+    .task-item.done { opacity: 0.5; }
+
+    .task-num {
+      background: #2a2a4a;
+      color: #6060a0;
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    .task-content { flex: 1; min-width: 0; }
+
+    .task-name {
+      font-size: 14px;
+      line-height: 1.4;
+      margin-bottom: 6px;
+      word-break: break-word;
+    }
+
+    .task-meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+    .badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: #2a2a4a;
+      color: #8080b0;
+    }
+
+    .badge.priority-high { background: #3d1515; color: #f87171; }
+    .badge.priority-mid { background: #2d2d10; color: #fbbf24; }
+    .badge.overdue-badge { background: #3d1515; color: #f87171; }
+    .badge.today-badge { background: #2d2510; color: #fbbf24; }
+    .badge.date { color: #6060a0; }
+
+    /* Загрузка */
+    .loading {
+      text-align: center;
+      padding: 60px;
+      color: #4040a0;
+    }
+
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid #2a2a4a;
+      border-top-color: #7c6aff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #c0c0e0;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .error {
+      background: #2d1010;
+      border: 1px solid #5a2020;
+      border-radius: 12px;
+      padding: 20px;
+      color: #f87171;
+      text-align: center;
+    }
+
+    /* Скрытые секции */
+    .section { display: none; }
+    .section.active { display: block; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>⚡ Планер продуктивности</h1>
+  <div class="date-badge" id="todayDate"></div>
+</header>
+
+<nav>
+  <button class="active" onclick="showSection('planner')">📋 Планер</button>
+  <button onclick="showSection('habits')">🔥 Привычки</button>
+  <button onclick="showSection('calendar')">📅 Календарь</button>
+  <button onclick="showSection('schedule')">⏰ График дня</button>
+</nav>
+
+<div class="container">
+
+  <!-- ПЛАНЕР -->
+  <div id="section-planner" class="section active">
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card total"><div class="number" id="statTotal">—</div><div class="label">Всего</div></div>
+      <div class="stat-card done"><div class="number" id="statDone">—</div><div class="label">Готово</div></div>
+      <div class="stat-card working"><div class="number" id="statWorking">—</div><div class="label">В работе</div></div>
+      <div class="stat-card overdue"><div class="number" id="statOverdue">—</div><div class="label">Просрочено</div></div>
+    </div>
+
+    <div class="progress-label">
+      <span>Прогресс дня</span>
+      <span id="progressText">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+    <div class="filters">
+      <button class="filter-btn active" onclick="filterTasks('all', this)">Все</button>
+      <button class="filter-btn" onclick="filterTasks('today', this)">Сегодня</button>
+      <button class="filter-btn" onclick="filterTasks('overdue', this)">Просрочено</button>
+      <button class="filter-btn" onclick="filterTasks('high', this)">🔥 Высокий</button>
+      <button class="filter-btn" onclick="filterTasks('finance', this)">💳 Финансы</button>
+    </div>
+
+    <div class="section-title">📋 Задачи</div>
+    <div id="tasksList" class="tasks-list">
+      <div class="loading"><div class="spinner"></div>Загружаем данные из Google Sheets...</div>
+    </div>
+  </div>
+
+  <!-- ПРИВЫЧКИ (заглушка) -->
+  <div id="section-habits" class="section">
+    <div class="section-title">🔥 Трекер привычек</div>
+    <div class="loading">Скоро здесь появится трекер привычек из листов Январь–Декабрь</div>
+  </div>
+
+  <!-- КАЛЕНДАРЬ (заглушка) -->
+  <div id="section-calendar" class="section">
+    <div class="section-title">📅 Календарь</div>
+    <div class="loading">Скоро здесь появится синхронизация с Google Calendar</div>
+  </div>
+
+  <!-- ГРАФИК ДНЯ (заглушка) -->
+  <div id="section-schedule" class="section">
+    <div class="section-title">⏰ График дня</div>
+    <div class="loading">Скоро здесь появится расписание из листа "Дневной график"</div>
+  </div>
+
+</div>
+
+<script>
+  // ====================================================
+  // ⚙️ НАСТРОЙКИ — ЗАМЕНИ ЗДЕСЬ СВОЙ КЛЮЧ
+  // ====================================================
+  const API_KEY = 'AIzaSyAT9yzciuoBEbNZtzwVh0n4iUgQ3BypSDQ';  // ← СЮДА вставь ключ из Шага 2
+  const SPREADSHEET_ID = '1C5tbqN_SIG8Xy1b7HqTl0pxCVNjz_vx29O7y_16Hup4';
+  const SHEET_NAME = 'Ежедневный планер';
+  // ====================================================
+
+  let allTasks = [];
+
+  // Показать дату
+  const today = new Date();
+  document.getElementById('todayDate').textContent = today.toLocaleDateString('ru-RU', {
+    weekday: 'long', day: 'numeric', month: 'long'
+  });
+
+  // Переключение разделов
+  function showSection(name) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById('section-' + name).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  // Загрузка данных из Google Sheets
+  async function loadData() {
+    const range = encodeURIComponent(`${SHEET_NAME}!A1:Z60`);
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${range}?key=${API_KEY}`;
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Ошибка API: ${response.status}`);
+      const data = await response.json();
+      parseAndRender(data.values || []);
+    } catch (err) {
+      document.getElementById('tasksList').innerHTML = `
+        <div class="error">
+          ❌ Ошибка загрузки данных<br><br>
+          <small>${err.message}</small><br><br>
+          Проверь: 1) Таблица открыта для всех 2) API ключ правильный
+        </div>`;
+    }
+  }
+
+  function parseAndRender(rows) {
+    allTasks = [];
+
+    // Задачи идут с строки 7 (индекс 6), данные в столбцах G(6), I(8), M(12), Q(16), R(17), S(18), T(19)
+    for (let i = 6; i < rows.length; i++) {
+      const row = rows[i] || [];
+      const num = row[6];
+      const name = row[8];
+      if (!num || !name || name.trim() === '') continue;
+
+      const date = row[12] || '';
+      const priority = row[16] || '';
+      const category = row[17] || '';
+      const status = row[18] || '';
+      const daysLeft = parseInt(row[19]) || null;
+
+      allTasks.push({ num, name, date, priority, category, status, daysLeft });
+    }
+
+    updateStats();
+    renderTasks(allTasks);
+  }
+
+  function updateStats() {
+    const total = allTasks.filter(t => t.name).length;
+    const done = allTasks.filter(t => t.status && t.status.toLowerCase().includes('готово')).length;
+    const overdue = allTasks.filter(t => t.daysLeft !== null && t.daysLeft < 0).length;
+    const working = total - done;
+
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statDone').textContent = done;
+    document.getElementById('statWorking').textContent = working;
+    document.getElementById('statOverdue').textContent = overdue;
+
+    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent = pct + '%';
+  }
+
+  function renderTasks(tasks) {
+    const list = document.getElementById('tasksList');
+    if (tasks.length === 0) {
+      list.innerHTML = '<div class="loading">Нет задач для отображения</div>';
+      return;
+    }
+
+    const todayStr = today.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'short' }).toLowerCase();
+
+    list.innerHTML = tasks.map(task => {
+      const isOverdue = task.daysLeft !== null && task.daysLeft < 0;
+      const isToday = task.daysLeft === 0;
+      const isDone = task.status && task.status.toLowerCase().includes('готово');
+
+      let itemClass = 'task-item';
+      if (isOverdue) itemClass += ' overdue';
+      if (isToday) itemClass += ' today';
+      if (isDone) itemClass += ' done';
+
+      const priorityBadge = task.priority.includes('Высокий')
+        ? '<span class="badge priority-high">🔥 Высокий</span>'
+        : task.priority.includes('Средний')
+        ? '<span class="badge priority-mid">⚡️ Средний</span>' : '';
+
+      const dateBadge = task.date
+        ? `<span class="badge date ${isOverdue ? 'overdue-badge' : isToday ? 'today-badge' : ''}">${isOverdue ? '⚠️ ' : isToday ? '📌 ' : ''}${task.date}</span>` : '';
+
+      const catBadge = task.category ? `<span class="badge">${task.category}</span>` : '';
+
+      return `
+        <div class="${itemClass}">
+          <div class="task-num">${task.num}</div>
+          <div class="task-content">
+            <div class="task-name">${task.name}</div>
+            <div class="task-meta">
+              ${priorityBadge}
+              ${dateBadge}
+              ${catBadge}
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function filterTasks(type, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    let filtered = allTasks;
+    if (type === 'today') filtered = allTasks.filter(t => t.daysLeft === 0);
+    if (type === 'overdue') filtered = allTasks.filter(t => t.daysLeft !== null && t.daysLeft < 0);
+    if (type === 'high') filtered = allTasks.filter(t => t.priority.includes('Высокий'));
+    if (type === 'finance') filtered = allTasks.filter(t => t.category.includes('Финанс'));
+
+    renderTasks(filtered);
+  }
+
+  // Запуск
+  loadData();
+</script>
+</body>
+</html>
