@@ -333,7 +333,7 @@
 
   // Загрузка данных из Google Sheets
   async function loadData() {
-    const range = encodeURIComponent(`${SHEET_NAME}!A1:Z60`);
+    const range = encodeURIComponent(`${SHEET_NAME}!A1:AH60`);
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${range}?key=${API_KEY}`;
 
     try {
@@ -354,18 +354,17 @@
   function parseAndRender(rows) {
     allTasks = [];
 
-    // Задачи идут с строки 7 (индекс 6), данные в столбцах G(6), I(8), M(12), Q(16), R(17), S(18), T(19)
     for (let i = 6; i < rows.length; i++) {
       const row = rows[i] || [];
       const num = row[6];
       const name = row[8];
       if (!num || !name || name.trim() === '') continue;
 
-      const date = row[12] || '';
-      const priority = row[16] || '';
-      const category = row[17] || '';
-      const status = row[18] || '';
-      const daysLeft = parseInt(row[19]) || null;
+      const date = row[16] || '';
+      const priority = row[20] || '';
+      const category = row[21] || '';
+      const status = row[22] || '';
+      const daysLeft = parseInt(row[23]) || null;
 
       allTasks.push({ num, name, date, priority, category, status, daysLeft });
     }
