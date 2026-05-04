@@ -385,7 +385,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     .month-nav {
@@ -411,58 +411,156 @@
       font-weight: 700;
     }
 
-    .habit-row {
-      background: var(--bg3);
-      border: 1px solid var(--border);
+    /* HABIT TABLE */
+    .habits-wrap {
+      overflow-x: auto;
+      margin-bottom: 20px;
       border-radius: 12px;
-      padding: 12px 14px;
-      margin-bottom: 8px;
-    }
-
-    .habit-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-
-    .habit-name-wrap { display: flex; align-items: center; gap: 8px; flex: 1; }
-    .habit-name { font-size: 14px; font-weight: 500; }
-    .habit-pct {
-      font-family: 'Syne', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--accent2);
-    }
-
-    .habit-days {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-    }
-
-    .day-cell {
-      aspect-ratio: 1;
-      border-radius: 5px;
-      background: var(--bg2);
       border: 1px solid var(--border);
-      cursor: pointer;
-      transition: all 0.15s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    }
+
+    .habits-table {
+      border-collapse: collapse;
+      min-width: 100%;
+      font-size: 11px;
+    }
+
+    .habits-table th, .habits-table td {
+      border: 1px solid var(--border);
+      text-align: center;
+      padding: 0;
+      white-space: nowrap;
+    }
+
+    /* Habit name column */
+    .habits-table .col-name {
+      text-align: left;
+      padding: 6px 10px;
+      font-size: 12px;
+      color: var(--text2);
+      min-width: 130px;
+      max-width: 160px;
+      position: sticky;
+      left: 0;
+      background: var(--bg2);
+      z-index: 2;
+    }
+
+    /* Header rows */
+    .habits-table .th-dow {
       font-size: 9px;
       color: var(--text3);
-      position: relative;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding: 4px 2px;
+      background: var(--bg3);
+      min-width: 22px;
+      width: 22px;
     }
 
-    .day-cell:hover { border-color: var(--accent); }
-    .day-cell.filled { background: var(--accent); border-color: var(--accent); }
-    .day-cell.filled-green { background: var(--green); border-color: var(--green); }
-    .day-cell.today-cell { border-color: var(--yellow) !important; }
-    .day-cell.future { opacity: 0.3; cursor: default; }
+    .habits-table .th-dow.is-today {
+      color: var(--yellow);
+    }
 
-    .habit-actions { display: flex; gap: 4px; }
+    .habits-table .th-daynum {
+      font-size: 10px;
+      color: var(--text3);
+      padding: 3px 2px;
+      background: var(--bg2);
+      min-width: 22px;
+      width: 22px;
+    }
+
+    .habits-table .th-daynum.is-today {
+      color: var(--yellow);
+      font-weight: 700;
+    }
+
+    /* Habit name header */
+    .habits-table .th-name {
+      text-align: left;
+      padding: 6px 10px;
+      font-size: 10px;
+      color: var(--text3);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: var(--bg3);
+      position: sticky;
+      left: 0;
+      z-index: 3;
+    }
+
+    /* Habit cell */
+    .hcell {
+      width: 22px;
+      height: 22px;
+      cursor: pointer;
+      background: var(--bg3);
+      transition: background 0.15s;
+      display: table-cell;
+    }
+
+    .hcell:hover { background: var(--border2); }
+    .hcell.h-done { background: var(--accent) !important; }
+    .hcell.h-today { box-shadow: inset 0 0 0 1px var(--yellow); }
+    .hcell.h-future { background: var(--bg); cursor: default; opacity: 0.4; }
+    .hcell.h-future:hover { background: var(--bg); }
+
+    /* Pct column */
+    .habits-table .col-pct {
+      padding: 4px 8px;
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent2);
+      background: var(--bg2);
+      min-width: 40px;
+      position: sticky;
+      right: 0;
+      z-index: 2;
+    }
+
+    .habits-table .th-pct {
+      padding: 4px 8px;
+      font-size: 9px;
+      color: var(--text3);
+      font-weight: 600;
+      text-transform: uppercase;
+      background: var(--bg3);
+      position: sticky;
+      right: 0;
+      z-index: 3;
+    }
+
+    /* Delete row */
+    .habits-table .col-del {
+      padding: 2px 4px;
+      background: var(--bg2);
+    }
+
+    /* Progress per day row */
+    .habits-table .row-progress td {
+      background: var(--bg);
+      padding: 3px 2px;
+    }
+
+    .habits-table .row-progress .col-name {
+      font-size: 10px;
+      color: var(--text3);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: var(--bg);
+    }
+
+    .day-pct-cell {
+      font-size: 9px;
+      color: var(--text3);
+    }
+
+    .day-pct-cell.good { color: var(--green); }
+    .day-pct-cell.mid { color: var(--yellow); }
 
     .add-habit-btn {
       width: 100%;
@@ -480,10 +578,126 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      margin-top: 8px;
+      margin-top: 12px;
     }
 
     .add-habit-btn:hover { background: rgba(0,212,170,0.15); }
+
+    /* CHART */
+    .habits-chart-wrap {
+      margin-top: 20px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .habits-chart-title {
+      font-size: 11px;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    #habit-chart {
+      width: 100%;
+      height: 90px;
+    }
+
+    /* MOOD TABLE */
+    .mood-wrap {
+      margin-top: 20px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .mood-header {
+      padding: 12px 16px;
+      font-size: 11px;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mood-table-wrap { overflow-x: auto; }
+
+    .mood-table {
+      border-collapse: collapse;
+      min-width: 100%;
+      font-size: 11px;
+    }
+
+    .mood-table th, .mood-table td {
+      border: 1px solid var(--border);
+      text-align: center;
+      padding: 0;
+    }
+
+    .mood-table .mood-label {
+      text-align: left;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      min-width: 110px;
+      position: sticky;
+      left: 0;
+      background: var(--bg3);
+      z-index: 2;
+      white-space: nowrap;
+    }
+
+    .mood-table .mood-th {
+      font-size: 9px;
+      color: var(--text3);
+      padding: 4px 2px;
+      background: var(--bg3);
+      min-width: 22px;
+      width: 22px;
+    }
+
+    .mood-table .mood-th.is-today { color: var(--yellow); }
+
+    .mood-cell {
+      width: 22px;
+      height: 26px;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 600;
+      transition: background 0.15s;
+      color: var(--text3);
+    }
+
+    .mood-cell:hover { background: var(--border2); color: var(--text); }
+    .mood-cell.future { opacity: 0.3; cursor: default; }
+    .mood-cell.future:hover { background: transparent; }
+
+    .mood-avg {
+      padding: 4px 8px;
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent2);
+      background: var(--bg2);
+      position: sticky;
+      right: 0;
+      z-index: 2;
+    }
+
+    .mood-table .mood-avg-th {
+      padding: 4px 6px;
+      font-size: 9px;
+      color: var(--text3);
+      background: var(--bg3);
+      position: sticky;
+      right: 0;
+      z-index: 3;
+    }
 
     /* ===== CALENDAR ===== */
     .cal-grid {
@@ -756,14 +970,30 @@
 
   <!-- ===== ПРИВЫЧКИ ===== -->
   <div id="s-habits" class="section">
-    <div class="card">
-      <div class="month-selector">
-        <button class="month-nav" onclick="changeMonth(-1)">‹</button>
-        <div class="month-label" id="habit-month-label"></div>
-        <button class="month-nav" onclick="changeMonth(1)">›</button>
+    <div class="month-selector">
+      <button class="month-nav" onclick="changeMonth(-1)">‹</button>
+      <div class="month-label" id="habit-month-label"></div>
+      <button class="month-nav" onclick="changeMonth(1)">›</button>
+    </div>
+
+    <!-- Таблица привычек -->
+    <div class="habits-wrap">
+      <table class="habits-table" id="habits-table"></table>
+    </div>
+    <button class="add-habit-btn" onclick="openHabitModal()">＋ Добавить привычку</button>
+
+    <!-- График прогресса за месяц -->
+    <div class="habits-chart-wrap">
+      <div class="habits-chart-title">📈 Прогресс за месяц (%)</div>
+      <canvas id="habit-chart"></canvas>
+    </div>
+
+    <!-- Таблица внутреннего состояния -->
+    <div class="mood-wrap">
+      <div class="mood-header">🧠 Внутреннее состояние (0–10)</div>
+      <div class="mood-table-wrap">
+        <table class="mood-table" id="mood-table"></table>
       </div>
-      <div id="habits-list"></div>
-      <button class="add-habit-btn" onclick="openHabitModal()">＋ Добавить привычку</button>
     </div>
   </div>
 
@@ -1104,6 +1334,10 @@ function saveTask() {
 }
 
 // ========== HABITS ==========
+const MONTHS_RU = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const DAYS_SHORT = ['вс','пн','вт','ср','чт','пт','сб'];
+const MOOD_ROWS = ['😊 Настроение','⚡ Энергия','🔥 Мотивация'];
+
 function habitKey() {
   return `${currentHabitMonth.y}-${String(currentHabitMonth.m + 1).padStart(2,'0')}`;
 }
@@ -1113,56 +1347,213 @@ function getDaysInMonth(y, m) {
 }
 
 function renderHabits() {
-  const MONTHS_RU = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
   document.getElementById('habit-month-label').textContent =
     `${MONTHS_RU[currentHabitMonth.m]} ${currentHabitMonth.y}`;
 
   const key = habitKey();
-  const habits = (state.habits[key] || []);
+  const habits = state.habits[key] || [];
   const daysInMonth = getDaysInMonth(currentHabitMonth.y, currentHabitMonth.m);
-  const todayDay = (today.getFullYear() === currentHabitMonth.y && today.getMonth() === currentHabitMonth.m)
-    ? today.getDate() : null;
+  const isCurrentMonth = (today.getFullYear() === currentHabitMonth.y && today.getMonth() === currentHabitMonth.m);
+  const todayDay = isCurrentMonth ? today.getDate() : daysInMonth;
 
-  const list = document.getElementById('habits-list');
+  // Build header rows: day-of-week + day numbers
+  let dowRow = `<tr><th class="th-name">Привычка</th>`;
+  let numRow = `<tr><td class="col-name" style="font-size:9px;color:var(--text3);background:var(--bg2)"></td>`;
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(currentHabitMonth.y, currentHabitMonth.m, d);
+    const dow = DAYS_SHORT[date.getDay()];
+    const isToday = isCurrentMonth && d === today.getDate();
+    dowRow += `<th class="th-dow ${isToday ? 'is-today' : ''}">${dow}</th>`;
+    numRow += `<td class="th-daynum ${isToday ? 'is-today' : ''}">${d}</td>`;
+  }
+  dowRow += `<th class="th-pct">%</th><th class="th-pct" style="min-width:28px"></th></tr>`;
+  numRow += `<td class="th-pct"></td><td class="th-pct"></td></tr>`;
+
+  // Habit rows
+  let habitRows = '';
   if (habits.length === 0) {
-    list.innerHTML = `<div class="empty"><div class="empty-icon">🔥</div>Нет привычек на этот месяц</div>`;
-    return;
+    habitRows = `<tr><td colspan="${daysInMonth + 3}" style="padding:30px;text-align:center;color:var(--text3);font-size:13px;">Нет привычек — добавь первую</td></tr>`;
+  } else {
+    habits.forEach(h => {
+      const days = h.days || [];
+      const possible = isCurrentMonth ? today.getDate() : daysInMonth;
+      const done = days.filter(d => d <= possible).length;
+      const pct = possible > 0 ? Math.round((done / possible) * 100) : 0;
+
+      let cells = '';
+      for (let d = 1; d <= daysInMonth; d++) {
+        const isFuture = isCurrentMonth && d > today.getDate();
+        const isToday = isCurrentMonth && d === today.getDate();
+        const filled = days.includes(d);
+        let cls = 'hcell';
+        if (filled) cls += ' h-done';
+        if (isToday) cls += ' h-today';
+        if (isFuture) cls += ' h-future';
+        const click = isFuture ? '' : `onclick="toggleHabitDay('${h.id}',${d})"`;
+        cells += `<td class="${cls}" title="${d} ${MONTHS_RU[currentHabitMonth.m]}" ${click}></td>`;
+      }
+
+      habitRows += `
+        <tr>
+          <td class="col-name">${h.name}</td>
+          ${cells}
+          <td class="col-pct">${pct}%</td>
+          <td class="col-del"><button class="action-btn del" onclick="deleteHabit('${h.id}')" title="Удалить">×</button></td>
+        </tr>`;
+    });
   }
 
-  list.innerHTML = habits.map(h => {
-    const done = (h.days || []).length;
-    const possible = todayDay || daysInMonth;
-    const pct = possible > 0 ? Math.round((done / possible) * 100) : 0;
-
-    let cells = '';
-    for (let d = 1; d <= daysInMonth; d++) {
-      const isFuture = todayDay && d > todayDay;
-      const isToday = d === todayDay;
-      const filled = (h.days || []).includes(d);
-      let cls = 'day-cell';
-      if (filled) cls += ' filled';
-      if (isToday) cls += ' today-cell';
-      if (isFuture) cls += ' future';
-      const click = isFuture ? '' : `onclick="toggleHabitDay('${h.id}',${d})"`;
-      cells += `<div class="${cls}" title="День ${d}" ${click}>${d}</div>`;
+  // Daily progress row
+  let progressRow = `<tr class="row-progress"><td class="col-name">% за день</td>`;
+  const dayPcts = [];
+  for (let d = 1; d <= daysInMonth; d++) {
+    const isFuture = isCurrentMonth && d > today.getDate();
+    if (isFuture || habits.length === 0) {
+      progressRow += `<td class="day-pct-cell"></td>`;
+      dayPcts.push(0);
+    } else {
+      const doneCnt = habits.filter(h => (h.days || []).includes(d)).length;
+      const pct = Math.round((doneCnt / habits.length) * 100);
+      dayPcts.push(pct);
+      const cls = pct >= 80 ? 'good' : pct >= 40 ? 'mid' : '';
+      progressRow += `<td class="day-pct-cell ${cls}">${pct}%</td>`;
     }
+  }
+  progressRow += `<td class="col-pct"></td><td></td></tr>`;
 
-    return `
-      <div class="habit-row">
-        <div class="habit-header">
-          <div class="habit-name-wrap">
-            <span class="habit-name">${h.name}</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px">
-            <span class="habit-pct">${pct}%</span>
-            <div class="habit-actions">
-              <button class="action-btn del" onclick="deleteHabit('${h.id}')" title="Удалить">🗑️</button>
-            </div>
-          </div>
-        </div>
-        <div class="habit-days">${cells}</div>
-      </div>`;
-  }).join('');
+  document.getElementById('habits-table').innerHTML = dowRow + numRow + habitRows + progressRow;
+
+  renderHabitChart(dayPcts, daysInMonth, isCurrentMonth);
+  renderMoodTable(daysInMonth, isCurrentMonth);
+}
+
+function renderHabitChart(dayPcts, daysInMonth, isCurrentMonth) {
+  const canvas = document.getElementById('habit-chart');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 700;
+  const H = 90;
+  canvas.width = W;
+  canvas.height = H;
+  ctx.clearRect(0, 0, W, H);
+
+  const maxDay = isCurrentMonth ? today.getDate() : daysInMonth;
+  const pts = dayPcts.slice(0, maxDay);
+  if (pts.length === 0) return;
+
+  const padL = 4, padR = 4, padT = 8, padB = 20;
+  const chartW = W - padL - padR;
+  const chartH = H - padT - padB;
+  const step = chartW / Math.max(pts.length - 1, 1);
+
+  // Grid lines
+  ctx.strokeStyle = '#1e1e35';
+  ctx.lineWidth = 1;
+  [0, 25, 50, 75, 100].forEach(v => {
+    const y = padT + chartH - (v / 100) * chartH;
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+    ctx.fillStyle = '#4a4a70';
+    ctx.font = '9px DM Sans';
+    ctx.fillText(v + '%', 0, y + 3);
+  });
+
+  // Area fill
+  const grad = ctx.createLinearGradient(0, padT, 0, padT + chartH);
+  grad.addColorStop(0, 'rgba(108,92,231,0.4)');
+  grad.addColorStop(1, 'rgba(108,92,231,0)');
+  ctx.beginPath();
+  pts.forEach((v, i) => {
+    const x = padL + i * step;
+    const y = padT + chartH - (v / 100) * chartH;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.lineTo(padL + (pts.length - 1) * step, padT + chartH);
+  ctx.lineTo(padL, padT + chartH);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  ctx.strokeStyle = '#6c5ce7';
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  pts.forEach((v, i) => {
+    const x = padL + i * step;
+    const y = padT + chartH - (v / 100) * chartH;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Day labels bottom
+  ctx.fillStyle = '#4a4a70';
+  ctx.font = '9px DM Sans';
+  ctx.textAlign = 'center';
+  pts.forEach((v, i) => {
+    if (i % 5 === 0 || i === pts.length - 1) {
+      const x = padL + i * step;
+      ctx.fillText(i + 1, x, H - 4);
+    }
+  });
+}
+
+function renderMoodTable(daysInMonth, isCurrentMonth) {
+  const key = habitKey();
+  if (!state.mood) state.mood = {};
+  if (!state.mood[key]) state.mood[key] = {};
+  const moodData = state.mood[key];
+
+  // Header
+  let html = `<tr><th class="mood-label" style="background:var(--bg3);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;">Состояние</th>`;
+  for (let d = 1; d <= daysInMonth; d++) {
+    const isToday = isCurrentMonth && d === today.getDate();
+    html += `<th class="mood-th ${isToday ? 'is-today' : ''}">${d}</th>`;
+  }
+  html += `<th class="mood-avg-th">Ср.</th></tr>`;
+
+  MOOD_ROWS.forEach((label, ri) => {
+    const rowKey = `r${ri}`;
+    html += `<tr><td class="mood-label">${label}</td>`;
+    let sum = 0, cnt = 0;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const isFuture = isCurrentMonth && d > today.getDate();
+      const cellKey = `${rowKey}_d${d}`;
+      const val = moodData[cellKey];
+      let cls = 'mood-cell';
+      if (isFuture) cls += ' future';
+
+      // color based on value
+      let bg = '';
+      if (val !== undefined) {
+        sum += val; cnt++;
+        const r = Math.round(255 - val * 15);
+        const g = Math.round(val * 20);
+        bg = `background:rgba(${r},${g},100,0.25);color:var(--text);`;
+      }
+
+      const click = isFuture ? '' : `onclick="cycleMood('${key}','${rowKey}',${d})"`;
+      html += `<td class="${cls}" style="${bg}" ${click} title="День ${d}">${val !== undefined ? val : ''}</td>`;
+    }
+    const avg = cnt > 0 ? (sum / cnt).toFixed(1) : '—';
+    html += `<td class="mood-avg">${avg}</td></tr>`;
+  });
+
+  document.getElementById('mood-table').innerHTML = html;
+}
+
+function cycleMood(monthKey, rowKey, day) {
+  if (!state.mood) state.mood = {};
+  if (!state.mood[monthKey]) state.mood[monthKey] = {};
+  const cellKey = `${rowKey}_d${day}`;
+  const cur = state.mood[monthKey][cellKey];
+  if (cur === undefined) state.mood[monthKey][cellKey] = 5;
+  else if (cur >= 10) delete state.mood[monthKey][cellKey];
+  else state.mood[monthKey][cellKey] = cur + 1;
+  save();
+  const key = habitKey();
+  const daysInMonth = getDaysInMonth(currentHabitMonth.y, currentHabitMonth.m);
+  const isCurrentMonth = (today.getFullYear() === currentHabitMonth.y && today.getMonth() === currentHabitMonth.m);
+  renderMoodTable(daysInMonth, isCurrentMonth);
 }
 
 function changeMonth(dir) {
