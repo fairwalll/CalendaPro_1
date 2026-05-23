@@ -63,6 +63,14 @@
   --h-done:#2c4870;--h-today-border:#a06800;
   --shadow:0 2px 10px rgba(0,0,0,0.09);
 }
+[data-theme="choco"] {
+  --bg:#1e1008;--bg2:#2c1a0a;--bg3:#3a2210;--border:#50300e;--border2:#704218;
+  --accent:#c8853a;--accent2:#e0a858;--accent3:#f0d890;
+  --red:#e03828;--yellow:#d8a018;--green:#58a838;--orange:#e07020;
+  --text:#f8eed8;--text2:#d8c098;--text3:#a08050;
+  --h-done:#c8853a;--h-today-border:#d8a018;
+  --shadow:0 2px 12px rgba(0,0,0,0.45);
+}
 
 /* ===== BASE ===== */
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -247,7 +255,7 @@ main{max-width:1000px;margin:0 auto;padding:16px 13px 80px;}
 .goal-progress-track{height:6px;background:var(--bg3);border-radius:6px;overflow:hidden;}
 .goal-progress-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--accent3));transition:width .6s;}
 .goal-update-row{display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap;}
-.goal-num-inp{background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:4px 8px;color:var(--text);font-size:calc(var(--fs)*0.95);text-align:right;outline:none;min-width:60px;max-width:140px;font-family:'Syne',sans-serif;font-weight:600;}
+.goal-num-inp{background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:4px 10px;color:var(--text);font-size:calc(var(--fs)*0.95);text-align:right;outline:none;min-width:80px;max-width:180px;font-family:'Syne',sans-serif;font-weight:600;}
 .goal-num-inp:focus{border-color:var(--accent);}
 .goal-done-check{display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 10px;background:var(--bg3);border-radius:9px;cursor:pointer;}
 .goal-done-check input{accent-color:var(--green);width:16px;height:16px;}
@@ -313,7 +321,7 @@ main{max-width:1000px;margin:0 auto;padding:16px 13px 80px;}
 .hr-row:last-child{border-bottom:none;}
 .hr-row:hover{background:var(--bg3);}
 .hr-row.cur-hr{background:rgba(108,92,231,.07);}
-.hr-lbl{width:50px;flex-shrink:0;display:flex;align-items:center;justify-content:flex-end;padding:0 9px 0 0;font-size:calc(var(--fs) * 0.88);font-weight:600;color:var(--text3);font-family:'Syne',sans-serif;border-right:1px solid var(--border);}
+.hr-lbl{width:calc(var(--fs) * 4.2);min-width:46px;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:0 6px;font-size:calc(var(--fs) * 0.92);font-weight:600;color:var(--text3);font-family:'Syne',sans-serif;border-right:1px solid var(--border);text-align:center;white-space:nowrap;}
 .hr-lbl.cur-lbl{color:var(--accent2);}
 .hr-content{flex:1;padding:4px 7px;display:flex;flex-wrap:wrap;gap:4px;align-items:center;}
 .sc-blk{display:inline-flex;align-items:center;gap:4px;font-size:calc(var(--fs) * 0.88);padding:2px 8px;border-radius:7px;font-weight:500;color:#fff;}
@@ -434,6 +442,41 @@ main{max-width:1000px;margin:0 auto;padding:16px 13px 80px;}
   .goal-detail-wrap{position:static;max-height:none;}
 }
 @media(max-width:480px){.stats-row{grid-template-columns:repeat(2,1fr);}}
+
+/* ===== SCHEDULE DAY NAV (задача 6) ===== */
+.sch-day-nav{display:flex;align-items:center;gap:10px;margin-bottom:11px;flex-wrap:wrap;}
+.sch-day-lbl{font-family:'Syne',sans-serif;font-weight:700;font-size:calc(var(--fs)*1.05);flex:1;text-align:center;}
+.sch-note{font-size:calc(var(--fs)*.82);color:var(--text3);background:rgba(108,92,231,.08);border:1px solid rgba(108,92,231,.2);border-radius:8px;padding:6px 10px;margin-bottom:11px;}
+.sc-blk.sc-event{outline:2px solid rgba(255,255,255,.5);}
+.sc-blk.sc-everyday{opacity:.9;}
+.sc-ev-badge{font-size:calc(var(--fs)*.72);background:rgba(255,255,255,.25);border-radius:4px;padding:1px 4px;margin-left:3px;}
+
+/* ===== CALENDAR DAY DETAIL MODAL (задача 6) ===== */
+.cal-day-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:200;align-items:flex-start;justify-content:center;padding:20px 13px;overflow-y:auto;}
+.cal-day-modal.open{display:flex;}
+.cal-day-box{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:20px;width:100%;max-width:480px;margin:auto;animation:mIn .2s cubic-bezier(.4,0,.2,1);}
+.cal-day-box-title{font-family:'Syne',sans-serif;font-weight:700;font-size:calc(var(--fs)*1.2);margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;}
+.cal-day-section{margin-bottom:14px;}
+.cal-day-section-label{font-size:calc(var(--fs)*.78);color:var(--text3);text-transform:uppercase;letter-spacing:.7px;font-weight:600;margin-bottom:6px;}
+.cal-day-ev-item{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg3);border-radius:9px;margin-bottom:5px;}
+.cal-day-ev-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.cal-day-sc-item{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--border);}
+.cal-day-sc-item:last-child{border-bottom:none;}
+.cal-day-sc-time{font-family:'Syne',sans-serif;font-size:calc(var(--fs)*.85);font-weight:700;color:var(--accent2);min-width:44px;}
+.cal-day-empty{font-size:calc(var(--fs)*.9);color:var(--text3);padding:10px 0;}
+
+/* ===== GOALS MIND MAP (задача 10) ===== */
+.goals-view-toggle{display:flex;gap:6px;margin-bottom:12px;}
+.view-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text3);padding:5px 12px;border-radius:8px;cursor:pointer;font-size:calc(var(--fs)*.88);font-family:'DM Sans',sans-serif;transition:all .15s;}
+.view-btn.active{background:rgba(108,92,231,.18);border-color:var(--accent);color:var(--accent2);}
+.goals-map-wrap{display:none;width:100%;height:600px;background:var(--bg2);border:1px solid var(--border);border-radius:13px;overflow:hidden;position:relative;}
+.goals-map-wrap.active{display:block;}
+#goals-canvas{width:100%;height:100%;cursor:grab;display:block;}
+#goals-canvas:active{cursor:grabbing;}
+.map-center-label{position:absolute;left:50%;transform:translateX(-50%);top:8px;font-size:calc(var(--fs)*.8);color:var(--text3);pointer-events:none;}
+.goals-split.hidden{display:none;}
+.goal-map-tooltip{position:absolute;background:var(--bg2);border:1px solid var(--border2);border-radius:9px;padding:8px 12px;font-size:calc(var(--fs)*.88);pointer-events:none;max-width:220px;box-shadow:0 6px 20px rgba(0,0,0,.3);z-index:10;display:none;}
+
 </style>
 </head>
 <body>
@@ -553,7 +596,11 @@ main{max-width:1000px;margin:0 auto;padding:16px 13px 80px;}
     <button class="add-btn" style="flex:1;margin-bottom:0;" onclick="openGoalMo()">＋ Добавить цель</button>
     <button class="add-btn secondary" style="flex:1;margin-bottom:0;" onclick="openImportMo()">📂 Добавить из файла</button>
   </div>
-  <div class="goals-split">
+  <div class="goals-view-toggle">
+    <button class="view-btn active" id="gview-table" onclick="setGoalView('table',this)">☰ Таблица</button>
+    <button class="view-btn" id="gview-map" onclick="setGoalView('map',this)">🕸️ Карта целей</button>
+  </div>
+  <div class="goals-split" id="goals-split">
     <div class="goals-table-wrap">
       <table class="goals-table" id="goals-table">
         <thead><tr><th>Цель</th><th>Направление</th><th>%</th><th>Дедлайн</th></tr></thead>
@@ -563,6 +610,11 @@ main{max-width:1000px;margin:0 auto;padding:16px 13px 80px;}
     <div class="goal-detail-wrap" id="goal-detail">
       <div class="goal-detail-empty">← Выбери цель из списка</div>
     </div>
+  </div>
+  <div class="goals-map-wrap" id="goals-map-wrap">
+    <div class="map-center-label" id="map-center-label">🎯 Мои цели 2026</div>
+    <canvas id="goals-canvas"></canvas>
+    <div class="goal-map-tooltip" id="goal-map-tooltip"></div>
   </div>
 </div>
 
@@ -580,9 +632,37 @@ main{max-width:1000px;margin:0 auto;padding:16px 13px 80px;}
   <div id="evs-list"></div>
 </div>
 
+<!-- ДЕНЬ ДЕТАЛЬНО (модальное) -->
+<div class="cal-day-modal" id="cal-day-modal">
+  <div class="cal-day-box">
+    <div class="cal-day-box-title">
+      <span id="cal-day-modal-title">1 января</span>
+      <button class="act-btn" onclick="closeMo('cal-day-modal')">✕</button>
+    </div>
+    <div class="cal-day-section">
+      <div class="cal-day-section-label">📅 События и задачи дня</div>
+      <div id="cal-day-events"></div>
+    </div>
+    <div class="cal-day-section">
+      <div class="cal-day-section-label">⏰ Расписание (повседневное)</div>
+      <div id="cal-day-schedule"></div>
+    </div>
+    <div class="mo-acts" style="margin-top:12px;">
+      <button class="btn-s" onclick="closeMo('cal-day-modal')">Закрыть</button>
+      <button class="btn-p" onclick="openEvMoForDay()">＋ Добавить событие</button>
+    </div>
+  </div>
+</div>
+
 <!-- ГРАФИК -->
 <div id="s-schedule" class="section">
-  <div style="margin-bottom:9px;font-size:calc(var(--fs)*.88);color:var(--text3);">Нажми на любой час чтобы добавить блок</div>
+  <div class="sch-day-nav">
+    <button class="mo-nav" onclick="schNavDay(-1)">‹</button>
+    <div class="sch-day-lbl" id="sch-day-lbl"></div>
+    <button class="mo-nav" onclick="schNavDay(1)">›</button>
+    <button class="mo-nav" onclick="schNavToday()" title="Сегодня" style="width:auto;padding:0 8px;font-size:calc(var(--fs)*.82);">Сегодня</button>
+  </div>
+  <div class="sch-note">🏠 <strong>Повседневные дела</strong> — блоки с повторением. Они видны в этом разделе. <strong>События</strong> (однократные) — отображаются на Календаре цветом.</div>
   <div class="sch-grid" id="sch-grid"></div>
 </div>
 
@@ -915,6 +995,7 @@ const THEMES=[
   {id:'ocean',  n:'🌊 Морская',     b:'#060c18',b2:'#0a1428',a:'#1868c8'},
   {id:'rose',   n:'🌹 Розовая',     b:'#180810',b2:'#200d18',a:'#c03868'},
   {id:'slate',  n:'🪨 Серо-синяя', b:'#eef0f4',b2:'#ffffff',a:'#2c4870'},
+  {id:'choco',  n:'🍫 Шоколад',    b:'#1e1008',b2:'#2c1a0a',a:'#c8853a'},
 ];
 const USER_CODES=['alpha7','beta3','gamma5','delta9','epsilon2','zeta8','eta4'];
 const TRASH_TYPES={task:'задача',goal:'цель',event:'событие'};
@@ -947,6 +1028,66 @@ function initUser(){
   if(uc&&USER_CODES.includes(uc)){userCode=uc;document.title='CalendaPro — '+uc;}
 }
 
+// ===== HABIT CARRY-OVER =====
+function habMoKey(y,m){return`${y}-${String(m+1).padStart(2,'0')}`;}
+function checkHabitCarryOver(){
+  const curKey=habMoKey(today.getFullYear(),today.getMonth());
+  // Find previous month
+  let py=today.getFullYear(),pm=today.getMonth()-1;
+  if(pm<0){pm=11;py--;}
+  const prevKey=habMoKey(py,pm);
+  const prevHabits=state.habits[prevKey];
+  const curHabits=state.habits[curKey];
+  // Only offer carry-over if: prev month has habits, current month is empty or new, and we haven't asked yet
+  if(!prevHabits||!prevHabits.length)return;
+  if(curHabits&&curHabits.length)return;
+  const asked=localStorage.getItem('cp_carryover_'+curKey);
+  if(asked)return;
+  // Show carry-over banner
+  showCarryOverBanner(prevKey,prevHabits,curKey);
+}
+
+function showCarryOverBanner(prevKey,prevHabits,curKey){
+  const prevMonthName=MONTHS[parseInt(prevKey.split('-')[1])-1];
+  const banner=document.createElement('div');
+  banner.id='carryover-banner';
+  banner.style.cssText='position:fixed;bottom:70px;left:50%;transform:translateX(-50%);z-index:180;background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:16px 18px;max-width:420px;width:calc(100%-28px);box-shadow:0 8px 28px rgba(0,0,0,0.35);';
+  banner.innerHTML=`
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:calc(var(--fs)*1.05);margin-bottom:8px;">🔄 Перенести привычки?</div>
+    <div style="font-size:calc(var(--fs)*.9);color:var(--text2);margin-bottom:12px;">В ${prevMonthName} были ${prevHabits.length} привычек. Перенести в новый месяц?</div>
+    <div id="carryover-list" style="margin-bottom:12px;display:flex;flex-direction:column;gap:5px;">
+      ${prevHabits.map(h=>`<label style="display:flex;align-items:center;gap:7px;font-size:calc(var(--fs)*.92);cursor:pointer;">
+        <input type="checkbox" checked value="${h.id}" style="accent-color:var(--accent);width:14px;height:14px;">
+        ${h.name}
+      </label>`).join('')}
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="doCarryOver('${prevKey}','${curKey}')" style="flex:1;background:var(--accent);border:none;color:white;padding:9px;border-radius:8px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:calc(var(--fs)*.92);">Перенести выбранные</button>
+      <button onclick="dismissCarryOver('${curKey}')" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);padding:9px 14px;border-radius:8px;cursor:pointer;font-size:calc(var(--fs)*.88);">Пропустить</button>
+    </div>`;
+  document.body.appendChild(banner);
+}
+
+function doCarryOver(prevKey,curKey){
+  const checked=Array.from(document.querySelectorAll('#carryover-list input:checked')).map(cb=>cb.value);
+  const prevHabits=state.habits[prevKey]||[];
+  const toCarry=prevHabits.filter(h=>checked.includes(h.id));
+  if(!state.habits[curKey])state.habits[curKey]=[];
+  toCarry.forEach(h=>{
+    // Copy habit without days data
+    state.habits[curKey].push({id:Date.now().toString()+Math.random(),name:h.name,days:[]});
+  });
+  save();dismissCarryOver(curKey);
+  showToast(`Перенесено ${toCarry.length} привычек ✓`,'ok');
+  renderHabits();
+}
+
+function dismissCarryOver(curKey){
+  localStorage.setItem('cp_carryover_'+curKey,'1');
+  const banner=document.getElementById('carryover-banner');
+  if(banner)banner.remove();
+}
+
 // ===== INIT =====
 function init(){
   initUser();load();
@@ -954,8 +1095,10 @@ function init(){
   applyFS(loadPref('fs','13px'));
   buildThemeGrid();buildUserLinks();buildEmojiPanels();buildDirOptions();
   pruneTrash();
+  checkHabitCarryOver();
   document.getElementById('headerDate').textContent=today.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'long'});
   renderToday();renderTasks();renderHabits();renderGoals();renderCalendar();renderSchGrid();renderTrash();renderAIHistory();
+  initGoalMapEvents();
   const ttlEl=document.getElementById('trash-ttl');
   if(ttlEl)ttlEl.value=String(state.trashTTL||7);
 }
@@ -968,6 +1111,8 @@ function goTo(n,btn){
   if(n==='habits')setTimeout(()=>renderHabits(),30);
   if(n==='today')renderToday();
   if(n==='trash')renderTrash();
+  if(n==='goals'&&goalView==='map')setTimeout(()=>renderGoalMap(),50);
+  if(n==='schedule')renderSchGrid();
 }
 
 // ===== THEME =====
@@ -1309,6 +1454,236 @@ function getFilteredGoals(){
   return gs;
 }
 
+// ===== GOALS VIEW (задача 10) =====
+let goalView='table'; // 'table' | 'map'
+let mapSelectedId=null;
+let mapOffX=0,mapOffY=0,mapDragging=false,mapDragStart={x:0,y:0,ox:0,oy:0};
+let mapZoom=1;
+
+function setGoalView(v,btn){
+  goalView=v;
+  document.querySelectorAll('.goals-view-toggle .view-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const split=document.getElementById('goals-split');
+  const mapWrap=document.getElementById('goals-map-wrap');
+  if(v==='table'){split.classList.remove('hidden');mapWrap.classList.remove('active');}
+  else{split.classList.add('hidden');mapWrap.classList.add('active');setTimeout(()=>renderGoalMap(),50);}
+}
+
+function renderGoalMap(){
+  const canvas=document.getElementById('goals-canvas');
+  if(!canvas)return;
+  const W=canvas.offsetWidth,H=canvas.offsetHeight||600;
+  canvas.width=W;canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  const gs=state.goals||[];
+  if(!gs.length){ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--text3').trim();ctx.font='14px DM Sans';ctx.textAlign='center';ctx.fillText('Нет целей — добавь первую',W/2,H/2);return;}
+
+  // Group by area
+  const byArea={};
+  gs.forEach(g=>{if(!byArea[g.area])byArea[g.area]=[];byArea[g.area].push(g);});
+  const areas=Object.keys(byArea);
+  const cx=W/2+mapOffX,cy=H/2+mapOffY;
+  const R1=120*mapZoom; // area radius
+  const R2=80*mapZoom;  // goal radius from area
+  const R3=38*mapZoom;  // subgoal radius
+
+  // Get accent color from CSS var
+  const accent=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#6c5ce7';
+  const accent2=getComputedStyle(document.documentElement).getPropertyValue('--accent2').trim()||'#a78bfa';
+  const accent3=getComputedStyle(document.documentElement).getPropertyValue('--accent3').trim()||'#00d4aa';
+  const textCol=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()||'#e8e8f5';
+  const text3Col=getComputedStyle(document.documentElement).getPropertyValue('--text3').trim()||'#555580';
+  const bg2Col=getComputedStyle(document.documentElement).getPropertyValue('--bg2').trim()||'#0e0e1a';
+  const bg3Col=getComputedStyle(document.documentElement).getPropertyValue('--bg3').trim()||'#141426';
+
+  // Store node positions for hit-testing
+  canvas._nodes=[];
+
+  // Draw center
+  ctx.save();
+  ctx.beginPath();ctx.arc(cx,cy,32*mapZoom,0,Math.PI*2);
+  const gr0=ctx.createRadialGradient(cx,cy,2,cx,cy,32*mapZoom);
+  gr0.addColorStop(0,accent);gr0.addColorStop(1,accent2);
+  ctx.fillStyle=gr0;ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.15)';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle='#fff';ctx.font=`bold ${Math.round(11*mapZoom)}px Syne`;ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('🎯',cx,cy-4*mapZoom);
+  ctx.font=`${Math.round(9*mapZoom)}px DM Sans`;ctx.fillStyle='rgba(255,255,255,.8)';
+  ctx.fillText('Мои цели',cx,cy+10*mapZoom);
+  ctx.restore();
+
+  const AREA_COLORS=['#6c5ce7','#00d4aa','#e06b25','#e63b8a','#1fa355','#1868c8','#d8b818','#c03868','#a07040','#28984a','#804080'];
+
+  areas.forEach((area,ai)=>{
+    const aAngle=(ai/areas.length)*Math.PI*2 - Math.PI/2;
+    const ax=cx+Math.cos(aAngle)*R1;
+    const ay=cy+Math.sin(aAngle)*R1;
+    const aColor=AREA_COLORS[ai%AREA_COLORS.length];
+
+    // Line center -> area
+    ctx.save();
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ax,ay);
+    ctx.strokeStyle=aColor;ctx.lineWidth=2*mapZoom;ctx.globalAlpha=.5;ctx.stroke();ctx.restore();
+
+    // Area circle
+    ctx.save();
+    ctx.beginPath();ctx.arc(ax,ay,22*mapZoom,0,Math.PI*2);
+    const grA=ctx.createRadialGradient(ax,ay,2,ax,ay,22*mapZoom);
+    grA.addColorStop(0,aColor);grA.addColorStop(1,aColor+'88');
+    ctx.fillStyle=grA;ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.2)';ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font=`bold ${Math.round(10*mapZoom)}px DM Sans`;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(AREA_ICON[area]||'⭐',ax,ay);
+    ctx.restore();
+
+    // Area label
+    ctx.save();
+    ctx.fillStyle=aColor;ctx.font=`${Math.round(9*mapZoom)}px DM Sans`;ctx.textAlign='center';ctx.textBaseline='top';
+    const lblAy=ay+24*mapZoom;
+    const shortArea=area.length>10?area.slice(0,9)+'…':area;
+    ctx.fillText(shortArea,ax,lblAy);
+    ctx.restore();
+
+    // Goals in this area
+    const aGoals=byArea[area];
+    aGoals.forEach((g,gi)=>{
+      const spreadAngle=aGoals.length>1?(gi/(aGoals.length-1)-0.5)*1.2:0;
+      const gAngle=aAngle+spreadAngle;
+      const gx=ax+Math.cos(gAngle)*R2;
+      const gy=ay+Math.sin(gAngle)*R2;
+      const pct=getGoalPct(g);
+      const isSelected=g.id===mapSelectedId;
+      const gR=isSelected?20*mapZoom:15*mapZoom;
+
+      // Line area -> goal
+      ctx.save();
+      ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(gx,gy);
+      ctx.strokeStyle=g.done?'#1fa355':isSelected?'#e06b25':aColor;
+      ctx.lineWidth=(isSelected?2.5:1.5)*mapZoom;ctx.globalAlpha=.6;ctx.stroke();ctx.restore();
+
+      // Goal circle with progress arc
+      ctx.save();
+      ctx.beginPath();ctx.arc(gx,gy,gR,0,Math.PI*2);
+      ctx.fillStyle=isSelected?'#e06b25':g.done?'#1fa355':bg3Col;
+      ctx.fill();
+      ctx.strokeStyle=isSelected?'#ff9940':aColor;ctx.lineWidth=(isSelected?2.5:1.5)*mapZoom;ctx.stroke();
+      // Progress arc
+      if(!g.done&&pct>0){
+        ctx.beginPath();ctx.arc(gx,gy,gR,-Math.PI/2,-Math.PI/2+(pct/100)*Math.PI*2);
+        ctx.strokeStyle=accent3;ctx.lineWidth=2.5*mapZoom;ctx.stroke();
+      }
+      ctx.fillStyle=isSelected||g.done?'#fff':textCol;
+      ctx.font=`${Math.round(8*mapZoom)}px Syne`;ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(pct+'%',gx,gy);
+      ctx.restore();
+
+      // Goal label
+      const lblAngle=gAngle;const ldist=gR+10*mapZoom;
+      const lx=gx+Math.cos(lblAngle)*ldist;const ly=gy+Math.sin(lblAngle)*ldist;
+      ctx.save();ctx.fillStyle=isSelected?'#e06b25':textCol;
+      ctx.font=`${Math.round(9*mapZoom)}px DM Sans`;ctx.textAlign='center';ctx.textBaseline='top';
+      const shortG=g.name.length>14?g.name.slice(0,13)+'…':g.name;
+      ctx.fillText(shortG,lx,ly);ctx.restore();
+
+      // Store node
+      canvas._nodes.push({id:g.id,x:gx,y:gy,r:gR,type:'goal',g});
+
+      // Subgoals
+      const sgs=g.subgoals||[];
+      sgs.forEach((sg,si)=>{
+        const sgSpread=sgs.length>1?(si/(sgs.length-1)-0.5)*0.8:0;
+        const sgAngle=gAngle+sgSpread;
+        const sgx=gx+Math.cos(sgAngle)*R3;const sgy=gy+Math.sin(sgAngle)*R3;
+        const sgR=7*mapZoom;
+
+        ctx.save();
+        ctx.beginPath();ctx.moveTo(gx,gy);ctx.lineTo(sgx,sgy);
+        ctx.strokeStyle=sg.done?'#1fa355':aColor;ctx.lineWidth=mapZoom;ctx.globalAlpha=.4;ctx.stroke();ctx.restore();
+
+        ctx.save();ctx.beginPath();ctx.arc(sgx,sgy,sgR,0,Math.PI*2);
+        ctx.fillStyle=sg.done?'#1fa355':aColor+'66';ctx.fill();
+        ctx.strokeStyle=sg.done?'#1fa355':aColor;ctx.lineWidth=mapZoom;ctx.stroke();
+        ctx.restore();
+        canvas._nodes.push({id:g.id,x:sgx,y:sgy,r:sgR,type:'subgoal',sg,g});
+      });
+    });
+  });
+}
+
+function initGoalMapEvents(){
+  const canvas=document.getElementById('goals-canvas');if(!canvas)return;
+  canvas.addEventListener('mousemove',e=>{
+    if(mapDragging){
+      mapOffX=mapDragStart.ox+(e.clientX-mapDragStart.x);
+      mapOffY=mapDragStart.oy+(e.clientY-mapDragStart.y);
+      renderGoalMap();return;
+    }
+    const rect=canvas.getBoundingClientRect();
+    const mx=e.clientX-rect.left,my=e.clientY-rect.top;
+    const hit=hitNode(canvas,mx,my);
+    const tt=document.getElementById('goal-map-tooltip');
+    if(hit&&tt){
+      tt.style.display='block';
+      tt.style.left=(mx+12)+'px';tt.style.top=(my-10)+'px';
+      if(hit.type==='goal'){
+        const pct=getGoalPct(hit.g);
+        tt.innerHTML=`<strong>${AREA_ICON[hit.g.area]||''} ${hit.g.name}</strong><br>${hit.g.area} · ${pct}%${hit.g.deadline?'<br>📅 '+hit.g.deadline:''}`;
+      } else {
+        tt.innerHTML=`<strong>${hit.sg.name}</strong><br>${hit.sg.done?'✅ Выполнено':'⬜ В процессе'}`;
+      }
+      canvas.style.cursor='pointer';
+    } else {
+      if(tt)tt.style.display='none';
+      canvas.style.cursor=mapDragging?'grabbing':'grab';
+    }
+  });
+  canvas.addEventListener('mousedown',e=>{
+    mapDragging=true;mapDragStart={x:e.clientX,y:e.clientY,ox:mapOffX,oy:mapOffY};
+  });
+  canvas.addEventListener('mouseup',e=>{
+    if(!mapDragging)return;
+    const moved=Math.abs(e.clientX-mapDragStart.x)+Math.abs(e.clientY-mapDragStart.y);
+    mapDragging=false;
+    if(moved<5){
+      const rect=canvas.getBoundingClientRect();
+      const mx=e.clientX-rect.left,my=e.clientY-rect.top;
+      const hit=hitNode(canvas,mx,my);
+      if(hit&&hit.type==='goal'){
+        mapSelectedId=hit.id;renderGoalMap();
+        // Also select in table view
+        selectedGoalId=hit.id;
+      }
+    }
+  });
+  canvas.addEventListener('mouseleave',()=>{mapDragging=false;const tt=document.getElementById('goal-map-tooltip');if(tt)tt.style.display='none';});
+  canvas.addEventListener('wheel',e=>{
+    e.preventDefault();
+    mapZoom=Math.max(0.3,Math.min(3,mapZoom-e.deltaY*0.001));
+    renderGoalMap();
+  },{passive:false});
+  // Touch support
+  let lastTouchDist=0;
+  canvas.addEventListener('touchstart',e=>{
+    if(e.touches.length===1){mapDragging=true;mapDragStart={x:e.touches[0].clientX,y:e.touches[0].clientY,ox:mapOffX,oy:mapOffY};}
+    if(e.touches.length===2){lastTouchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);}
+  });
+  canvas.addEventListener('touchmove',e=>{
+    e.preventDefault();
+    if(e.touches.length===1&&mapDragging){mapOffX=mapDragStart.ox+(e.touches[0].clientX-mapDragStart.x);mapOffY=mapDragStart.oy+(e.touches[0].clientY-mapDragStart.y);renderGoalMap();}
+    if(e.touches.length===2){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);mapZoom=Math.max(0.3,Math.min(3,mapZoom*(d/lastTouchDist)));lastTouchDist=d;renderGoalMap();}
+  },{passive:false});
+  canvas.addEventListener('touchend',()=>{mapDragging=false;});
+}
+
+function hitNode(canvas,mx,my){
+  if(!canvas._nodes)return null;
+  for(let i=canvas._nodes.length-1;i>=0;i--){
+    const n=canvas._nodes[i];
+    if(Math.hypot(mx-n.x,my-n.y)<=n.r+4)return n;
+  }return null;
+}
+
 function renderGoals(){
   const gs=getFilteredGoals();
   const tbody=document.getElementById('goals-table-body');
@@ -1369,14 +1744,17 @@ function renderGoalDetail(id){
       <button class="filter-btn" onclick="togGD('${g.id}')">${g.done?'Отменить':'Выполнено'}</button>
     </div>`;
   } else {
+    const pctColor=pct>100?'color:var(--orange);font-weight:700;':pct===100?'color:var(--green);font-weight:700;':'';
+    const barColor=pct>100?'background:linear-gradient(90deg,var(--accent),var(--orange));':'';
+    const barW=Math.min(pct,100);
     updateBlock=`<div class="goal-progress-wrap">
-      <div class="goal-progress-info"><span>Прогресс</span><span>${pct}%</span></div>
-      <div class="goal-progress-track"><div class="goal-progress-fill" style="width:${pct}%"></div></div>
+      <div class="goal-progress-info"><span>Прогресс</span><span style="${pctColor}">${pct}%${pct>100?' 🔥 Перевыполнено!':''}</span></div>
+      <div class="goal-progress-track"><div class="goal-progress-fill" style="width:${barW}%;${barColor}"></div></div>
     </div>
     <div class="goal-update-row">
       <span style="font-size:calc(var(--fs)*.88);color:var(--text3);">Обновить %:</span>
-      <input class="goal-num-inp" type="number" value="${pct}" min="0" max="100"
-        onchange="updGP('${g.id}',this.value)" style="width:70px;">
+      <input class="goal-num-inp" type="number" value="${pct}" min="0"
+        onchange="updGP('${g.id}',this.value)" style="width:80px;">
     </div>`;
   }
   const sgs=(g.subgoals||[]).sort((a,b)=>(parseFloat(b.target)||0)-(parseFloat(a.target)||0));
@@ -1450,14 +1828,15 @@ function delGoal(id){
   const g=(state.goals||[]).find(g=>g.id===id);if(!g)return;
   openConf(`Удалить цель «${g.name}»?`,()=>{moveToTrash('goal',g);state.goals=state.goals.filter(g=>g.id!==id);selectedGoalId=null;save();renderGoals();showToast('Перемещено в корзину','err');});
 }
-function updGP(id,v){const g=(state.goals||[]).find(g=>g.id===id);if(g){g.pct=Math.min(100,Math.max(0,parseInt(v)||0));save();renderGoals();}}
+function updGP(id,v){const g=(state.goals||[]).find(g=>g.id===id);if(g){g.pct=Math.max(0,parseInt(v)||0);save();renderGoals();}}
 function updateGNum(id,v){const g=(state.goals||[]).find(g=>g.id===id);if(!g)return;g.current=parseFormattedNum(v);save();renderGoals();}
 function togGD(id){const g=(state.goals||[]).find(g=>g.id===id);if(g){g.done=!g.done;save();renderGoals();}}
 
 function formatGoalInput(inp){
   const raw=inp.value.replace(/\s/g,'');const num=parseFloat(raw)||0;
   const formatted=fmtNum(num);inp.value=formatted;
-  inp.style.width=Math.max(60,Math.min(140,(formatted.length+2)*9))+'px';
+  // dynamic width: each char ~9px, min 80, max 180
+  inp.style.width=Math.max(80,Math.min(180,(formatted.length+3)*9))+'px';
 }
 
 // ===== SUBGOALS =====
@@ -1556,9 +1935,13 @@ function renderCalendar(){
     const ds=`${calMo.y}-${String(calMo.m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
     const isT=today.getFullYear()===calMo.y&&today.getMonth()===calMo.m&&today.getDate()===i;
     const de=evs.filter(e=>e.date===ds);
-    const dots=de.map(e=>`<span style="display:inline-block;width:4px;height:4px;border-radius:50%;background:${e.color||'#6c5ce7'};margin:0 1px;"></span>`).join('');
-    html+=`<div class="cday${isT?' ctoday':''}${de.length?' has-ev':''}" onclick="clickDay('${ds}')">
-      <span>${i}</span>${de.length?`<div style="position:absolute;bottom:2px;display:flex;">${dots}</div>`:''}
+    // Also show dots for one-time schedule events
+    const viewD2=new Date(ds+'T00:00:00');
+    const scOnDay=(state.schedule||[]).filter(sc=>(sc.repeat==='none'||!sc.repeat)&&schActiveOnDay(sc,viewD2));
+    const allDots=[...de.map(e=>({color:e.color||'#6c5ce7'})),...scOnDay.map(s=>({color:s.color||'#888888'}))];
+    const dots=allDots.map(e=>`<span style="display:inline-block;width:4px;height:4px;border-radius:50%;background:${e.color};margin:0 1px;"></span>`).join('');
+    html+=`<div class="cday${isT?' ctoday':''}${allDots.length?' has-ev':''}" onclick="clickDay('${ds}')">
+      <span>${i}</span>${allDots.length?`<div style="position:absolute;bottom:2px;display:flex;">${dots}</div>`:''}
     </div>`;
   }
   grid.innerHTML=html;
@@ -1578,7 +1961,42 @@ function renderCalendar(){
 }
 function chCalMo(dir){calMo.m+=dir;if(calMo.m<0){calMo.m=11;calMo.y--;}if(calMo.m>11){calMo.m=0;calMo.y++;}renderCalendar();}
 function pCol(el,grp){document.querySelectorAll(`#${grp} .co`).forEach(e=>e.style.border='2px solid transparent');el.style.border='2px solid white';if(grp==='e-cols')evCol=el.dataset.c;else scCol=el.dataset.c;}
-function clickDay(ds){document.getElementById('e-date').value=ds;document.getElementById('e-name').value='';document.getElementById('e-time').value='';openMo('mo-ev');}
+function clickDay(ds){openDayDetail(ds);}
+function openDayDetail(ds){
+  const date=new Date(ds+'T00:00:00');
+  const dayTitle=date.toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('cal-day-modal-title').textContent=dayTitle;
+  // Events for this day
+  const evs=(state.events||[]).filter(e=>e.date===ds);
+  const evEl=document.getElementById('cal-day-events');
+  evEl.innerHTML=evs.length?evs.map(ev=>`<div class="cal-day-ev-item">
+    <div class="cal-day-ev-dot" style="background:${ev.color||'#6c5ce7'}"></div>
+    <div style="flex:1;">
+      <div style="font-size:calc(var(--fs)*.95);font-weight:500;">${ev.name}</div>
+      ${ev.time?`<div style="font-size:calc(var(--fs)*.82);color:var(--text3);">${ev.time}</div>`:''}
+    </div>
+    <button class="act-btn del" onclick="delEv('${ev.id}');openDayDetail('${ds}')">🗑️</button>
+  </div>`).join(''):`<div class="cal-day-empty">Нет событий</div>`;
+  // Schedule blocks active on this day (everyday only — non-events)
+  const viewD=new Date(ds+'T00:00:00');
+  const scItems=(state.schedule||[]).filter(sc=>schActiveOnDay(sc,viewD)).sort((a,b)=>a.time.localeCompare(b.time));
+  const scEl=document.getElementById('cal-day-schedule');
+  scEl.innerHTML=scItems.length?`<div style="border:1px solid var(--border);border-radius:9px;overflow:hidden;">
+    ${scItems.map(sc=>`<div class="cal-day-sc-item">
+      <span class="cal-day-sc-time">${sc.time}</span>
+      <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${sc.color||'#6c5ce7'};flex-shrink:0;"></span>
+      <span style="font-size:var(--fs);flex:1;">${sc.name}${sc.duration?' ('+sc.duration+' мин)':''}</span>
+    </div>`).join('')}
+  </div>`:`<div class="cal-day-empty">Нет блоков расписания</div>`;
+  window._calDayForModal=ds;
+  openMo('cal-day-modal');
+}
+function openEvMoForDay(){
+  const ds=window._calDayForModal||'';
+  document.getElementById('e-date').value=ds;
+  document.getElementById('e-name').value='';document.getElementById('e-time').value='';
+  closeMo('cal-day-modal');openMo('mo-ev');
+}
 function openEvMo(){document.getElementById('e-name').value='';document.getElementById('e-date').value='';document.getElementById('e-time').value='';openMo('mo-ev');}
 function saveEv(){
   const name=document.getElementById('e-name').value.trim(),date=document.getElementById('e-date').value;if(!name||!date)return;
@@ -1591,21 +2009,54 @@ function delEv(id){
 }
 
 // ===== SCHEDULE =====
-function schActiveToday(sc){
-  const dow=today.getDay();
-  if(sc.repeat==='daily')return true;if(sc.repeat==='weekdays')return dow>=1&&dow<=5;
-  if(sc.repeat==='weekends')return dow===0||dow===6;
-  if(sc.repeat==='custom'&&sc.days)return sc.days.includes(String(dow));return true;
+let schViewDate=new Date(today); // current viewed day in schedule
+
+function schDowName(d){return['Вс','Пн','Вт','Ср','Чт','Пт','Сб'][d];}
+function schDateStr(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function schNavDay(dir){
+  schViewDate=new Date(schViewDate);schViewDate.setDate(schViewDate.getDate()+dir);
+  renderSchGrid();
 }
+function schNavToday(){schViewDate=new Date(today);renderSchGrid();}
+
+function schActiveOnDay(sc,viewDate){
+  const dow=viewDate.getDay();
+  const ds=schDateStr(viewDate);
+  if(sc.repeat==='none'||!sc.repeat){
+    // one-time: check if the stored date matches (stored in sc.date if set)
+    return sc.date?sc.date===ds:true;
+  }
+  if(sc.repeat==='daily')return true;
+  if(sc.repeat==='weekdays')return dow>=1&&dow<=5;
+  if(sc.repeat==='weekends')return dow===0||dow===6;
+  if(sc.repeat==='custom'&&sc.days)return sc.days.includes(String(dow));
+  return true;
+}
+function schActiveToday(sc){return schActiveOnDay(sc,today);}
+
 function renderSchGrid(){
+  // Update day label
+  const isToday=schViewDate.toDateString()===today.toDateString();
+  const dayNames=['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
+  const lbl=document.getElementById('sch-day-lbl');
+  if(lbl){
+    lbl.textContent=isToday
+      ? `Сегодня, ${today.toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}`
+      : `${dayNames[schViewDate.getDay()]}, ${schViewDate.toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}`;
+  }
   const grid=document.getElementById('sch-grid');const items=state.schedule||[];let html='';
+  const curH=isToday?nowH:-1;
   for(let h=0;h<24;h++){
-    const hs=String(h).padStart(2,'0')+':00';const isCur=h===nowH;
-    const ri=items.filter(it=>parseInt(it.time.split(':')[0])===h);
-    const blocks=ri.map(it=>`<div class="sc-blk" style="background:${it.color||'#6c5ce7'};">
-        ${it.name}${it.duration?` (${it.duration}м)`:''}${it.repeat&&it.repeat!=='none'?' ↺':''}
+    const hs=String(h).padStart(2,'0')+':00';const isCur=h===curH;
+    const ri=items.filter(it=>schActiveOnDay(it,schViewDate)&&parseInt(it.time.split(':')[0])===h);
+    const blocks=ri.map(it=>{
+      const isEvent=!it.repeat||it.repeat==='none';
+      const badge=isEvent?`<span class="sc-ev-badge">📌</span>`:(it.repeat&&it.repeat!=='none'?`<span class="sc-ev-badge">↺</span>`:'');
+      return`<div class="sc-blk ${isEvent?'sc-event':'sc-everyday'}" style="background:${it.color||'#6c5ce7'};">
+        ${it.name}${it.duration?` (${it.duration}м)`:''}${badge}
         <button class="sdel" onclick="delSc('${it.id}');event.stopPropagation();">×</button>
-      </div>`).join('');
+      </div>`;
+    }).join('');
     html+=`<div class="hr-row${isCur?' cur-hr':''}" onclick="clickHour(${h})">
       <div class="hr-lbl${isCur?' cur-lbl':''}">${hs}</div>
       <div class="hr-content">${blocks}</div>
@@ -1738,37 +2189,125 @@ function togHD2(key,hid,day){
   save();renderToday();if(document.getElementById('s-habits').classList.contains('active'))renderHabits();
 }
 
-// ===== AI =====
-function sendAI(){
-  const inp=document.getElementById('ai-inp');const txt=inp.value.trim();if(!txt)return;
-  addAIMsg('ai-msgs',txt,'user');inp.value='';
-  setTimeout(()=>addAIMsg('ai-msgs','Подключение к Gemini API — следующий этап. Скоро смогу добавлять задачи и события!','bot'),600);
-  addToAIHistory(txt);
+// ===== AI (Gemini API) =====
+const GEMINI_KEY='AIzaSyDQ9nPQEv87HiXHC-JJnV7moEd4E0mAM9U';
+const GEMINI_URL='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+GEMINI_KEY;
+const SYSTEM_PROMPT=`Ты — ИИ-помощник приложения CalendaPro для личной продуктивности. 
+Ты помогаешь ТОЛЬКО с функциями этого приложения:
+- Добавление задач в планер
+- Добавление целей
+- Информация о текущих задачах, целях, привычках
+- Советы по планированию и продуктивности
+
+На ЛЮБЫЕ другие темы (новости, кулинария, политика, программирование вне приложения и т.д.) вежливо отвечай: "Я помогаю только с задачами CalendaPro. Попробуй спросить про свои задачи или цели."
+
+Когда пользователь просит добавить задачу — ответь в формате:
+ДОБАВИТЬ_ЗАДАЧУ: {"name":"...","date":"YYYY-MM-DD","priority":"Высокий 🔥|Средний ⚡️|Низкий","category":"..."}
+
+Когда пользователь просит добавить цель — ответь в формате:
+ДОБАВИТЬ_ЦЕЛЬ: {"name":"...","area":"Бизнес|Финансы|Здоровье|Спорт|Образование|Семья|Отношения|Путешествия|Личное развитие|Хобби|Другое","horizon":"year|month|week","type":"percent|number|yesno"}
+
+Текущее состояние пользователя:
+`;
+
+let aiIsTyping=false;
+
+async function callGemini(userMsg,contextStr){
+  const body={
+    system_instruction:{parts:[{text:SYSTEM_PROMPT+contextStr}]},
+    contents:[{role:'user',parts:[{text:userMsg}]}],
+    generationConfig:{maxOutputTokens:600,temperature:0.7}
+  };
+  const resp=await fetch(GEMINI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!resp.ok)throw new Error('Gemini API error: '+resp.status);
+  const data=await resp.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text||'Нет ответа';
 }
-function sendAI2(){
-  const inp=document.getElementById('ai-inp2');const txt=inp.value.trim();if(!txt)return;
-  addAIMsg('ai-msgs2',txt,'user');inp.value='';
-  setTimeout(()=>addAIMsg('ai-msgs2','Ответ ИИ появится после подключения Gemini API.','bot'),600);
-  addToAIHistory(txt);
+
+function getContextStr(){
+  const ts=state.tasks||[];const gs=state.goals||[];
+  const done=ts.filter(t=>t.status==='Выполнено').length;
+  const over=ts.filter(t=>t.date&&getDL(t.date)<0&&t.status!=='Выполнено').length;
+  const hKey=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
+  const habs=(state.habits[hKey]||[]).map(h=>h.name).join(', ');
+  const taskNames=ts.filter(t=>t.status!=='Выполнено').slice(0,8).map(t=>`"${t.name}"${t.date?` (до ${t.date})`:''}`).join(', ');
+  const goalNames=gs.slice(0,5).map(g=>`"${g.name}" (${g.area})`).join(', ');
+  return`Задачи (${ts.length} всего, ${done} выполнено, ${over} просрочено): ${taskNames||'нет'}\nЦели: ${goalNames||'нет'}\nПривычки этого месяца: ${habs||'нет'}`;
 }
+
+function processAIResponse(text){
+  // Check for task add command
+  const taskMatch=text.match(/ДОБАВИТЬ_ЗАДАЧУ:\s*(\{[^}]+\})/);
+  if(taskMatch){
+    try{
+      const d=JSON.parse(taskMatch[1]);
+      const task={id:Date.now().toString(),name:d.name||'Задача',desc:'',date:d.date||'',priority:d.priority||'',category:d.category||'',status:'Не начато'};
+      if(!state.tasks)state.tasks=[];state.tasks.push(task);save();renderTasks();
+      return text.replace(/ДОБАВИТЬ_ЗАДАЧУ:\s*\{[^}]+\}/,'').trim()+'\n✅ Задача добавлена в Планер!';
+    }catch(e){}
+  }
+  // Check for goal add command
+  const goalMatch=text.match(/ДОБАВИТЬ_ЦЕЛЬ:\s*(\{[^}]+\})/);
+  if(goalMatch){
+    try{
+      const d=JSON.parse(goalMatch[1]);
+      const goal={id:Date.now().toString(),name:d.name||'Цель',type:d.type||'percent',horizon:d.horizon||'year',area:d.area||'Другое',pct:0,done:false,subgoals:[],desc:''};
+      if(!state.goals)state.goals=[];state.goals.push(goal);selectedGoalId=goal.id;save();renderGoals();
+      return text.replace(/ДОБАВИТЬ_ЦЕЛЬ:\s*\{[^}]+\}/,'').trim()+'\n🎯 Цель добавлена в раздел Цели!';
+    }catch(e){}
+  }
+  return text;
+}
+
+async function sendAIMsg(inputId,msgsId){
+  if(aiIsTyping)return;
+  const inp=document.getElementById(inputId);const txt=inp.value.trim();if(!txt)return;
+  inp.value='';aiIsTyping=true;
+  addAIMsg(msgsId,txt,'user');
+  addToAIHistory(txt,'...');
+  // typing indicator
+  const tid='typing-'+Date.now();
+  const c=document.getElementById(msgsId);
+  const td=document.createElement('div');td.className='ai-msg bot';td.id=tid;td.textContent='⏳ Печатаю...';
+  c.appendChild(td);c.scrollTop=c.scrollHeight;
+  try{
+    const reply=await callGemini(txt,getContextStr());
+    const processed=processAIResponse(reply);
+    td.textContent=processed;
+    updateLastAIHistory(txt,processed);
+  }catch(e){
+    td.textContent='⚠️ Ошибка соединения с Gemini. Проверь интернет.';
+    updateLastAIHistory(txt,'Ошибка: '+e.message);
+  }
+  aiIsTyping=false;c.scrollTop=c.scrollHeight;
+}
+
+function sendAI(){sendAIMsg('ai-inp','ai-msgs');}
+function sendAI2(){sendAIMsg('ai-inp2','ai-msgs2');}
+
 function addAIMsg(containerId,text,role){
-  const c=document.getElementById(containerId);
+  const c=document.getElementById(containerId);if(!c)return;
   const d=document.createElement('div');d.className=`ai-msg ${role}`;d.textContent=text;
   c.appendChild(d);c.scrollTop=c.scrollHeight;
 }
-function addToAIHistory(txt){
+function addToAIHistory(q,a){
   if(!state.aiHistory)state.aiHistory=[];
-  state.aiHistory.unshift({text:txt,date:new Date().toLocaleString('ru-RU')});
+  state.aiHistory.unshift({q,a,ts:Date.now()});
   if(state.aiHistory.length>100)state.aiHistory=state.aiHistory.slice(0,100);
   save();renderAIHistory();
+}
+function updateLastAIHistory(q,a){
+  if(!state.aiHistory||!state.aiHistory.length)return;
+  state.aiHistory[0]={q,a,ts:Date.now()};save();renderAIHistory();
 }
 function renderAIHistory(){
   const el=document.getElementById('ai-history-list');if(!el)return;
   const h=state.aiHistory||[];
   if(!h.length){el.innerHTML=`<div style="color:var(--text3);font-size:calc(var(--fs)*.92);padding:12px 0;">История пуста</div>`;return;}
-  el.innerHTML=h.map(r=>`<div style="padding:8px 0;border-bottom:1px solid var(--border);">
-    <div style="font-size:var(--fs);">${r.text}</div>
-    <div style="font-size:calc(var(--fs)*.82);color:var(--text3);margin-top:3px;">${r.date}</div>
+  el.innerHTML=h.map(r=>`<div style="padding:9px 0;border-bottom:1px solid var(--border);">
+    <div style="font-size:calc(var(--fs)*.88);color:var(--text3);margin-bottom:3px;">❓ ${r.q}</div>
+    <div style="font-size:var(--fs);line-height:1.45;">${r.a&&r.a!=='...'?r.a:'⏳ Ожидание ответа...'}</div>
+    <div style="font-size:calc(var(--fs)*.78);color:var(--text3);margin-top:3px;">${new Date(r.ts).toLocaleString('ru-RU')}</div>
   </div>`).join('');
 }
 
@@ -1779,7 +2318,7 @@ function openConf(txt,cb){document.getElementById('conf-txt').textContent=txt;do
 function closeConf(){document.getElementById('conf-ov').classList.remove('open');}
 function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} show`;setTimeout(()=>t.classList.remove('show'),2400);}
 
-document.querySelectorAll('.mo-ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+document.querySelectorAll('.mo-ov,.cal-day-modal').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){document.querySelectorAll('.mo-ov.open,.conf-ov.open').forEach(m=>m.classList.remove('open'));closeSettings();}
 });
