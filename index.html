@@ -5,10 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CalendaPro</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
 <style>
 /* ===== THEMES ===== */
 :root {
@@ -529,21 +526,7 @@ main{max-width:1000px;margin:0 auto;padding:16px 13px 80px;}
   #s-calendar > div{grid-template-columns:1fr!important;}
   .cal-day-panel{position:static;max-height:none;min-width:0;max-width:100%;margin-top:10px;}
 }
-#auth-screen{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;}
-#auth-screen.hidden{display:none;}
-.auth-box{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:32px 28px;width:100%;max-width:380px;box-shadow:0 16px 48px rgba(0,0,0,0.4);}
-.auth-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;background:linear-gradient(135deg,var(--accent2),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:6px;}
-.auth-sub{text-align:center;font-size:13px;color:var(--text3);margin-bottom:24px;}
-.auth-tabs{display:flex;gap:0;background:var(--bg3);border-radius:10px;padding:3px;margin-bottom:20px;}
-.auth-tab{flex:1;text-align:center;padding:7px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text3);transition:all 0.2s;border:none;background:none;font-family:'DM Sans',sans-serif;}
-.auth-tab.active{background:var(--bg2);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.2);}
-.auth-field{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;margin-bottom:10px;transition:border-color 0.2s;}
 .auth-field:focus{border-color:var(--accent);}
-.auth-btn{width:100%;background:var(--accent);border:none;color:white;padding:12px;border-radius:10px;cursor:pointer;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;transition:all 0.2s;margin-top:4px;}
-.auth-btn:hover{filter:brightness(1.12);}
-.auth-err{color:var(--red);font-size:12px;margin-top:6px;text-align:center;min-height:16px;}
-.auth-sep{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--text3);font-size:12px;}
-.auth-sep::before,.auth-sep::after{content:'';flex:1;height:1px;background:var(--border);}
 .user-info{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg3);border-radius:8px;font-size:12px;color:var(--text2);}
 .user-email{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .logout-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px;padding:3px 6px;border-radius:6px;transition:all 0.15s;white-space:nowrap;}
@@ -556,29 +539,6 @@ main{max-width:1000px;margin:0 auto;padding:16px 13px 80px;}
 <body>
 
 <!-- AUTH SCREEN -->
-<div id="auth-screen">
-  <div class="auth-box">
-    <div class="auth-logo">CalendaPro</div>
-    <div class="auth-sub">Личная система продуктивности</div>
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Войти</button>
-      <button class="auth-tab" id="tab-reg" onclick="switchAuthTab('reg')">Регистрация</button>
-    </div>
-    <input class="auth-field" id="auth-email" type="email" placeholder="Email">
-    <input class="auth-field" id="auth-pass" type="password" placeholder="Пароль" onkeydown="if(event.key==='Enter')doAuth()">
-    <input class="auth-field" id="auth-pass2" type="password" placeholder="Повтори пароль" style="display:none;" onkeydown="if(event.key==='Enter')doAuth()">
-    <div class="auth-err" id="auth-err"></div>
-    <button class="auth-btn" id="auth-submit" onclick="doAuth()">Войти</button>
-    <div class="auth-sep">или</div>
-    <button class="auth-btn auth-btn-google" style="background:var(--bg3);color:var(--text2);border:1px solid var(--border2);margin-top:0;display:flex;align-items:center;justify-content:center;gap:8px;" onclick="doGoogleAuth()">
-      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
-      Войти через Google
-    </button>
-    <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:8px;line-height:1.4;">
-      При нажатии откроется страница Google для входа.<br>После входа вернёшься обратно автоматически.
-    </div>
-  </div>
-</div>
 
 <header>
   <div class="logo">CalendaPro</div>
@@ -587,7 +547,7 @@ main{max-width:1000px;margin:0 auto;padding:16px 13px 80px;}
     <div class="sync-indicator" id="sync-indicator" style="display:none;"><div class="sync-dot"></div><span>Синхр.</span></div>
     <div class="user-info" id="user-info" style="display:none;">
       <span>👤</span><span class="user-email" id="user-email"></span>
-      <button class="logout-btn" onclick="doLogout()">Выйти</button>
+      
     </div>
     <button class="icon-btn" onclick="openSettings()" title="Настройки">⚙️</button>
   </div>
@@ -1214,7 +1174,6 @@ function dismissCarryOver(curKey){
 }
 
 // ===== INIT =====
-// init() is now handled by Firebase onAuthStateChanged → initApp()
 
 function goTo(n,btn){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
@@ -2314,187 +2273,8 @@ function renderAIHistory(){
 }
 
 // ===== FIREBASE =====
-const FB_CONFIG={
-  apiKey:"AIzaSyAbNiXV5morQv5y1cb6whsqeG5wjnj5iew",
-  authDomain:"calendapro-3fabc.firebaseapp.com",
-  databaseURL:"https://calendapro-3fabc-default-rtdb.firebaseio.com",
-  projectId:"calendapro-3fabc",
-  storageBucket:"calendapro-3fabc.firebasestorage.app",
-  messagingSenderId:"134463028500",
-  appId:"1:134463028500:web:a6eb21232040ce02301601"
-};
-firebase.initializeApp(FB_CONFIG);
-const fbAuth=firebase.auth();
-const fbDb=firebase.database();
-// Use local persistence so login survives page refresh
-fbAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-let currentUser=null;
-let syncTimer=null;
-let authMode='login';
-
-// Auth tab switch
-function switchAuthTab(mode){
-  authMode=mode;
-  document.getElementById('tab-login').classList.toggle('active',mode==='login');
-  document.getElementById('tab-reg').classList.toggle('active',mode==='reg');
-  document.getElementById('auth-submit').textContent=mode==='login'?'Войти':'Зарегистрироваться';
-  document.getElementById('auth-pass2').style.display=mode==='reg'?'block':'none';
-  document.getElementById('auth-err').textContent='';
-}
-
-// Email/password auth
-function doAuth(){
-  const email=document.getElementById('auth-email').value.trim();
-  const pass=document.getElementById('auth-pass').value;
-  const pass2=document.getElementById('auth-pass2').value;
-  const errEl=document.getElementById('auth-err');
-  errEl.textContent='';
-  if(!email||!pass){errEl.textContent='Заполни email и пароль';return;}
-  if(authMode==='reg'){
-    if(pass.length<6){errEl.textContent='Пароль минимум 6 символов';return;}
-    if(pass!==pass2){errEl.textContent='Пароли не совпадают';return;}
-    fbAuth.createUserWithEmailAndPassword(email,pass)
-      .catch(e=>errEl.textContent=getAuthError(e.code));
-  } else {
-    fbAuth.signInWithEmailAndPassword(email,pass)
-      .catch(e=>errEl.textContent=getAuthError(e.code));
-  }
-}
-
-// Google auth — use redirect (works on GitHub Pages, no popup block)
-function doGoogleAuth(){
-  const errEl=document.getElementById('auth-err');
-  const btn=document.querySelector('.auth-btn-google');
-  if(btn){btn.textContent='⏳ Переход к Google...';btn.disabled=true;}
-  const provider=new firebase.auth.GoogleAuthProvider();
-  provider.setCustomParameters({prompt:'select_account'});
-  fbAuth.signInWithRedirect(provider).catch(e=>{
-    if(btn){btn.textContent='🔵 Войти через Google';btn.disabled=false;}
-    errEl.textContent=getAuthError(e.code);
-  });
-}
-
-// Handle redirect result on page load
-function handleRedirectResult(){
-  fbAuth.getRedirectResult().then(result=>{
-    // Redirect result handled — onAuthStateChanged will fire automatically
-    if(result&&result.user){
-      // User signed in via redirect — nothing extra needed
-    }
-  }).catch(e=>{
-    const errEl=document.getElementById('auth-err');
-    if(errEl){errEl.textContent=getAuthError(e.code);}
-    console.warn('Redirect result error:',e.code,e.message);
-  });
-}
-
-function doLogout(){
-  openConf('Выйти из аккаунта?',()=>{fbAuth.signOut();});
-}
-
-function getAuthError(code){
-  const msgs={
-    'auth/user-not-found':'Пользователь не найден',
-    'auth/wrong-password':'Неверный пароль',
-    'auth/invalid-credential':'Неверный email или пароль',
-    'auth/email-already-in-use':'Email уже используется',
-    'auth/invalid-email':'Неверный формат email',
-    'auth/weak-password':'Слишком простой пароль (минимум 6 символов)',
-    'auth/too-many-requests':'Слишком много попыток. Подожди немного.',
-    'auth/popup-closed-by-user':'Окно закрыто. Попробуй снова.',
-    'auth/popup-blocked':'Попап заблокирован браузером. Используй перенаправление.',
-    'auth/unauthorized-domain':'Домен не авторизован в Firebase. Добавь fairwalll.github.io в Authentication → Settings → Authorized domains.',
-    'auth/network-request-failed':'Ошибка сети. Проверь интернет-соединение.',
-    'auth/operation-not-allowed':'Этот способ входа отключён. Включи Google в Firebase → Authentication → Sign-in method.',
-    'auth/cancelled-popup-request':'Запрос отменён.',
-    'auth/account-exists-with-different-credential':'Аккаунт уже существует с другим способом входа.',
-  };
-  return msgs[code]||'Ошибка: '+code;
-}
-
-// Firebase save — debounced
-function save(){
-  localStorage.setItem('cp_local_backup',JSON.stringify(state));
-  if(!currentUser)return;
-  clearTimeout(syncTimer);
-  const si=document.getElementById('sync-indicator');if(si)si.style.display='flex';
-  syncTimer=setTimeout(()=>{
-    fbDb.ref('users/'+currentUser.uid+'/state').set(state)
-      .then(()=>{if(si)si.style.display='none';})
-      .catch(e=>console.warn('Firebase save error:',e));
-  },800);
-}
-
-// Load data from Firebase
-function loadFromFirebase(uid){
-  fbDb.ref('users/'+uid+'/state').once('value').then(snap=>{
-    const data=snap.val();
-    if(data){
-      state=data;
-      // ensure arrays exist
-      ['tasks','events','schedule','goals','aiHistory'].forEach(k=>{if(!state[k])state[k]=[];});
-      if(!state.habits)state.habits={};if(!state.mood)state.mood={};if(!state.trash)state.trash=[];
-    } else {
-      // Try local backup
-      const backup=localStorage.getItem('cp_local_backup');
-      if(backup){try{state=JSON.parse(backup);}catch(e){}}
-    }
-    initApp();
-  }).catch(e=>{
-    console.warn('Firebase load error, using local:',e);
-    const backup=localStorage.getItem('cp_local_backup');
-    if(backup){try{state=JSON.parse(backup);}catch(e2){}}
-    initApp();
-  });
-  // Listen for real-time changes from other devices
-  fbDb.ref('users/'+uid+'/state').on('value',snap=>{
-    const data=snap.val();
-    if(data&&!syncTimer){
-      state=data;
-      ['tasks','events','schedule','goals','aiHistory'].forEach(k=>{if(!state[k])state[k]=[];});
-      if(!state.habits)state.habits={};if(!state.mood)state.mood={};if(!state.trash)state.trash=[];
-      refreshAllViews();
-    }
-  });
-}
-
-function refreshAllViews(){
-  const active=document.querySelector('.section.active');
-  if(!active)return;
-  const id=active.id;
-  if(id==='s-today')renderToday();
-  else if(id==='s-planner')renderTasks();
-  else if(id==='s-habits')renderHabits();
-  else if(id==='s-goals')renderGoals();
-  else if(id==='s-calendar')renderCalendar();
-  else if(id==='s-schedule')renderSchGrid();
-  if(id==='s-goals'){renderGoals();if(goalView==='tree')renderGoalTree();}
-  else if(id==='s-schedule'){renderSchGrid();}
-  else if(id==='s-trash')renderTrash();
-}
-
-// Handle Google redirect result first
-handleRedirectResult();
-
-// Auth state observer
-fbAuth.onAuthStateChanged(user=>{
-  currentUser=user;
-  const authScr=document.getElementById('auth-screen');
-  const userInfo=document.getElementById('user-info');
-  const userEmail=document.getElementById('user-email');
-  if(user){
-    authScr.classList.add('hidden');
-    if(userInfo){userInfo.style.display='flex';}
-    if(userEmail){userEmail.textContent=user.email||user.displayName||'Пользователь';}
-    loadFromFirebase(user.uid);
-  } else {
-    authScr.classList.remove('hidden');
-    if(userInfo){userInfo.style.display='none';}
-    state={tasks:[],habits:{},mood:{},events:[],schedule:[],goals:[],trash:[],aiHistory:[]};
-  }
-});
-
 function initApp(){
+  load();
   applyTheme(loadTheme());
   applyFontSize(loadFontSize());
   buildThemeGrid();
@@ -2509,6 +2289,8 @@ function initApp(){
   renderToday();renderTasks();renderHabits();renderGoals();renderCalendar();renderSchGrid();renderTrash();renderAIHistory();
   buildSchCatGrid();
 }
+
+initApp();
 
 // ===== GOAL VIEW TOGGLE =====
 let goalView='table';
@@ -2807,7 +2589,6 @@ buildThemeGrid();
 buildFontOptions();
 initEmojiPanels();
 buildDirOptions();
-// Firebase auth observer will call initApp() when user is authenticated
 </script>
 </body>
 </html>
