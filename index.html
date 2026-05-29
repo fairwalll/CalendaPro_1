@@ -1060,7 +1060,6 @@ main{max-width:1000px;margin:0 auto;padding:16px 13px 80px;}
   document.documentElement.style.setProperty('--fs',fs);
 })();
 
-document.addEventListener('DOMContentLoaded',function(){
 // ===== EMOJI DATA =====
 const EMOJIS={
   'Смайлы':['😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','😉','😌','😍','🥰','😘','😎','🤩','😏','😒','😔','😟','😣','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','😈','💀'],
@@ -1950,7 +1949,6 @@ const SCH_CATS=[
   {id:'travel', label:'🚗 Поездка',   color:'#c02020'},
   {id:'other',  label:'⭐ Другое',    color:'#606060'},
 ];
-let scCol='#2060c8';
 let schViewDay=null; // null = today, or Date object
 
 function buildSchCatGrid(){
@@ -2311,11 +2309,10 @@ function renderAIHistory(){
 // ===== FIREBASE =====
 function initApp(){
   load();
-  applyTheme(loadTheme());
-  applyFontSize(loadFontSize());
+  applyTheme(loadPref('theme','dark'));
+  applyFS(loadPref('fs','13px'));
   buildThemeGrid();
-  buildFontOptions();
-  initEmojiPanels();
+  buildEmojiPanels();
   buildDirOptions();
   const ttlSel=document.getElementById('trash-ttl');
   if(ttlSel)ttlSel.value=String(state.trashTTL||7);
@@ -2719,7 +2716,6 @@ window.renderGoalTree=renderGoalTree;
 // Start app — called last so all functions are defined
 initApp();
 
-}); // end DOMContentLoaded
 </script>
 </body>
 </html>
