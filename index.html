@@ -440,7 +440,7 @@ main{max-width:1000px;margin:0 auto;padding:16px 13px 80px;}
 .emoji-wrap{position:relative;}
 .emoji-btn{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 10px;cursor:pointer;font-size:calc(var(--fs) * 1.1);line-height:1;transition:all .15s;flex-shrink:0;}
 .emoji-btn:hover{border-color:var(--border2);}
-.emoji-panel{display:none;position:absolute;top:calc(100% + 5px);left:0;z-index:9999;background:var(--bg2);border:1px solid var(--border2);border-radius:11px;padding:10px;width:290px;max-height:220px;overflow-y:auto;box-shadow:0 10px 30px rgba(0,0,0,.5);animation:mIn .15s ease;}
+.emoji-panel{display:none;position:fixed;z-index:9999;background:var(--bg2);border:1px solid var(--border2);border-radius:11px;padding:10px;width:290px;height:220px;overflow-y:auto;box-shadow:0 10px 30px rgba(0,0,0,.6);}
 .emoji-panel.open{display:block;}
 .emoji-cat{font-size:calc(var(--fs) * 0.78);color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin:6px 0 3px;font-weight:600;}
 .emoji-grid{display:flex;flex-wrap:wrap;gap:2px;}
@@ -912,12 +912,19 @@ main{max-width:1000px;margin:0 auto;padding:16px 13px 80px;}
 <div class="mo-ov" id="mo-subgoal">
   <div class="mo">
     <div class="mo-title">Добавить подцель</div>
+    <div class="fg" id="sg-parent-wrap" style="margin-bottom:10px;background:var(--bg3);border-radius:8px;padding:8px 12px;">
+      <div style="font-size:calc(var(--fs)*.78);color:var(--text3);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:3px;">Основная цель</div>
+      <div id="sg-parent-name" style="font-size:calc(var(--fs)*.95);font-weight:600;color:var(--accent2);"></div>
+    </div>
     <div class="fg"><label class="fl">Название подцели *</label><input class="fi" id="sg-name" placeholder="Например: 50 отжиманий за подход"></div>
     <div class="f2">
       <div class="fg"><label class="fl">Текущее значение</label><input class="fi" type="number" id="sg-current" placeholder="0"></div>
       <div class="fg"><label class="fl">Целевое значение</label><input class="fi" type="number" id="sg-target" placeholder="50"></div>
     </div>
-    <div class="fg"><label class="fl">Единица</label><input class="fi" id="sg-unit" placeholder="раз, ₽, км..."></div>
+    <div class="f2">
+      <div class="fg"><label class="fl">Единица</label><input class="fi" id="sg-unit" placeholder="раз, ₽, км..."></div>
+      <div class="fg"><label class="fl">Дедлайн</label><input class="fi" type="date" id="sg-deadline"></div>
+    </div>
     <div class="mo-acts"><button class="btn-s" onclick="closeMo('mo-subgoal')">Отмена</button><button class="btn-p" onclick="saveSubgoal()">Добавить</button></div>
   </div>
 </div>
@@ -1045,6 +1052,15 @@ main{max-width:1000px;margin:0 auto;padding:16px 13px 80px;}
 <div class="toast" id="toast"></div>
 
 <script>
+// Немедленно применяем тему до загрузки остального кода
+(function(){
+  const t=localStorage.getItem('cp_pref_theme')||'dark';
+  document.documentElement.setAttribute('data-theme',t);
+  const fs=localStorage.getItem('cp_pref_fs')||'13px';
+  document.documentElement.style.setProperty('--fs',fs);
+})();
+
+document.addEventListener('DOMContentLoaded',function(){
 // ===== EMOJI DATA =====
 const EMOJIS={
   'Смайлы':['😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','😉','😌','😍','🥰','😘','😎','🤩','😏','😒','😔','😟','😣','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','😈','💀'],
@@ -1224,9 +1240,15 @@ function buildEmojiPanels(){
 }
 function toggleEmoji(panelId){
   const p=document.getElementById(panelId);
+  const btn=p?p.closest('.emoji-wrap')?.querySelector('.emoji-btn'):null;
   const wasOpen=p.classList.contains('open');
   closeAllEmoji();
-  if(!wasOpen)p.classList.add('open');
+  if(!wasOpen&&btn){
+    const rect=btn.getBoundingClientRect();
+    p.style.top=(rect.bottom+6)+'px';
+    p.style.left=Math.min(rect.left,window.innerWidth-300)+'px';
+    p.classList.add('open');
+  }
 }
 function closeAllEmoji(){document.querySelectorAll('.emoji-panel').forEach(p=>p.classList.remove('open'));}
 function insertEmoji(panelId,emoji){
@@ -1316,10 +1338,18 @@ function togDesc(id){
   const pr=df.previousElementSibling;
   if(pr&&pr.classList.contains('task-desc-line1'))pr.style.display=open?'none':'';
 }
-function qDone(id){const t=state.tasks.find(t=>t.id===id);if(!t)return;t.status=t.status==='Выполнено'?'Не начато':'Выполнено';save();renderTasks();}
+function qDone(id){
+  const t=state.tasks.find(t=>t.id===id);if(!t)return;
+  if(t.status==='Выполнено'){t.status='Не начато';delete t.doneDate;}
+  else{t.status='Выполнено';t.doneDate=today.toISOString().slice(0,10);}
+  save();renderTasks();
+}
 function chStatus(id,sel){
   const t=state.tasks.find(t=>t.id===id);if(!t)return;
-  t.status=sel.value;sel.className='status-sel '+(SS[sel.value]||'ss-new');
+  t.status=sel.value;
+  if(sel.value==='Выполнено')t.doneDate=today.toISOString().slice(0,10);
+  else delete t.doneDate;
+  sel.className='status-sel '+(SS[sel.value]||'ss-new');
   const item=document.getElementById('ti-'+id);
   if(item){item.classList.remove('st-done-item','st-process-item');
     if(sel.value==='Выполнено')item.classList.add('st-done-item');
@@ -1679,18 +1709,28 @@ function formatGoalInput(inp){
 // ===== SUBGOALS =====
 function openSubgoalMo(goalId){
   addSubgoalForId=goalId;
-  ['sg-name','sg-current','sg-target','sg-unit'].forEach(id=>document.getElementById(id).value='');
-  openMo('mo-subgoal');setTimeout(()=>document.getElementById('sg-name').focus(),100);
+  const g=(state.goals||[]).find(g=>g.id===goalId);
+  const parentName=document.getElementById('sg-parent-name');
+  if(parentName&&g)parentName.textContent=g.name;
+  ['sg-name','sg-current','sg-target','sg-unit','sg-deadline'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  openMo('mo-subgoal');
+  setTimeout(()=>document.getElementById('sg-name').focus(),100);
 }
 function saveSubgoal(){
   const name=document.getElementById('sg-name').value.trim();if(!name)return;
   const g=(state.goals||[]).find(g=>g.id===addSubgoalForId);if(!g)return;
   if(!g.subgoals)g.subgoals=[];
+  const dlEl=document.getElementById('sg-deadline');
   g.subgoals.push({id:Date.now().toString(),name,
     current:parseFloat(document.getElementById('sg-current').value)||0,
     target:parseFloat(document.getElementById('sg-target').value)||0,
-    unit:document.getElementById('sg-unit').value.trim(),done:false});
+    unit:document.getElementById('sg-unit').value.trim(),
+    deadline:dlEl?dlEl.value:'',
+    done:false});
   syncSubgoalsToParent(g);save();renderGoals();closeMo('mo-subgoal');showToast('Подцель добавлена ✓','ok');
+  if(typeof goalView!=='undefined'&&goalView==='tree')renderGoalTree();
 }
 function syncSubgoalsToParent(g){
   if(g.type==='number'&&g.subgoals&&g.subgoals.length){
@@ -1910,7 +1950,7 @@ const SCH_CATS=[
   {id:'travel', label:'🚗 Поездка',   color:'#c02020'},
   {id:'other',  label:'⭐ Другое',    color:'#606060'},
 ];
-// scCol declared above
+let scCol='#2060c8';
 let schViewDay=null; // null = today, or Date object
 
 function buildSchCatGrid(){
@@ -2281,9 +2321,39 @@ function initApp(){
   if(ttlSel)ttlSel.value=String(state.trashTTL||7);
   document.getElementById('headerDate').textContent=today.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'long'});
   pruneTrash();
+  autoCleanDoneTasks();
+  scheduleMidnightClean();
   checkHabitCarryOver();
   renderToday();renderTasks();renderHabits();renderGoals();renderCalendar();renderSchGrid();renderTrash();renderAIHistory();
   buildSchCatGrid();
+}
+
+// ===== AUTO CLEAN DONE TASKS =====
+function autoCleanDoneTasks(){
+  if(!state.tasks)return;
+  const todayStr=today.toISOString().slice(0,10);
+  const lastClean=localStorage.getItem('cp_last_clean');
+  if(lastClean===todayStr)return; // already cleaned today
+  const toRemove=state.tasks.filter(t=>t.status==='Выполнено'&&t.doneDate&&t.doneDate<todayStr);
+  if(toRemove.length){
+    toRemove.forEach(t=>moveToTrash('task',{...t}));
+    state.tasks=state.tasks.filter(t=>!(t.status==='Выполнено'&&t.doneDate&&t.doneDate<todayStr));
+    save();
+  }
+  localStorage.setItem('cp_last_clean',todayStr);
+}
+
+function scheduleMidnightClean(){
+  const now=new Date();
+  const midnight=new Date(now);
+  midnight.setDate(midnight.getDate()+1);
+  midnight.setHours(0,0,5,0); // 00:00:05 next day
+  const msUntilMidnight=midnight-now;
+  setTimeout(()=>{
+    autoCleanDoneTasks();
+    renderTasks();
+    scheduleMidnightClean(); // reschedule for next midnight
+  },msUntilMidnight);
 }
 
 // ===== GOAL VIEW TOGGLE =====
@@ -2298,133 +2368,166 @@ function setGoalView(v){
 }
 
 // ===== GOAL TREE =====
-let treeZoomed=false;
 let treeSelectedId=null;
+let treePan={x:0,y:0,scale:1};
+let treeDrag={active:false,startX:0,startY:0,panX:0,panY:0};
 
 function renderGoalTree(){
+  const wrap=document.getElementById('tree-canvas-wrap');
   const svg=document.getElementById('goal-tree-svg');
   const root=document.getElementById('tree-root');
-  if(!svg||!root)return;
-  const gs=state.goals||[];
-  const W=svg.parentElement.clientWidth||600;
-  const H=svg.parentElement.clientHeight||520;
+  if(!svg||!root||!wrap)return;
+
+  const W=wrap.clientWidth||600;
+  const H=wrap.clientHeight||520;
   svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
   root.innerHTML='';
 
-  // Group by area
+  const gs=state.goals||[];
   const areas={};
-  gs.forEach(g=>{
-    if(!areas[g.area])areas[g.area]=[];
-    areas[g.area].push(g);
-  });
+  gs.forEach(g=>{if(!areas[g.area])areas[g.area]=[];areas[g.area].push(g);});
   const areaKeys=Object.keys(areas);
+
   if(!areaKeys.length){
     root.innerHTML=`<text x="${W/2}" y="${H/2}" text-anchor="middle" fill="var(--text3)" font-size="14">Нет целей — добавь первую</text>`;
     return;
   }
 
   const cx=W/2,cy=H/2;
-  const AREA_COLORS=['#6c5ce7','#00d4aa','#e8a000','#e83050','#2060c8','#1a8a50','#b040a0','#c02020','#008888','#606060','#b8a000'];
+  const AREA_COLORS=['#6c5ce7','#00b894','#e8a000','#e84060','#2070d0','#1a9060','#b030a0','#d02020','#009898','#706080','#c0a000'];
 
   // Center node
-  root.innerHTML+=`<circle cx="${cx}" cy="${cy}" r="38" fill="var(--accent)" opacity="0.9"/>
-    <text x="${cx}" y="${cy-5}" text-anchor="middle" fill="white" font-size="11" font-family="Syne,sans-serif" font-weight="700">Я</text>
-    <text x="${cx}" y="${cy+9}" text-anchor="middle" fill="white" font-size="10" font-family="DM Sans,sans-serif">2026</text>`;
+  root.innerHTML+=`<circle cx="${cx}" cy="${cy}" r="40" fill="var(--accent)" opacity="0.92"/>
+    <text x="${cx}" y="${cy-6}" text-anchor="middle" fill="white" font-size="12" font-family="Syne,sans-serif" font-weight="700">Я</text>
+    <text x="${cx}" y="${cy+9}" text-anchor="middle" fill="rgba(255,255,255,.8)" font-size="10" font-family="DM Sans,sans-serif">2026</text>`;
 
-  const areaR=Math.min(cx,cy)*0.52;
+  const areaR=Math.min(cx,cy)*0.50;
+
   areaKeys.forEach((area,ai)=>{
     const angle=(2*Math.PI/areaKeys.length)*ai - Math.PI/2;
-    const ax=cx+areaR*Math.cos(angle);
-    const ay=cy+areaR*Math.sin(angle);
+    const ax=cx+areaR*Math.cos(angle),ay=cy+areaR*Math.sin(angle);
     const aColor=AREA_COLORS[ai%AREA_COLORS.length];
 
-    // Line center→area
-    root.innerHTML+=`<line x1="${cx}" y1="${cy}" x2="${ax}" y2="${ay}" stroke="${aColor}" stroke-width="2" opacity="0.4"/>`;
-
-    // Area node
+    root.innerHTML+=`<line x1="${cx}" y1="${cy}" x2="${ax}" y2="${ay}" stroke="${aColor}" stroke-width="2" opacity="0.35"/>`;
     const icon=AREA_ICON[area]||'⭐';
-    root.innerHTML+=`<circle cx="${ax}" cy="${ay}" r="22" fill="${aColor}" opacity="0.85"/>
+    root.innerHTML+=`<circle cx="${ax}" cy="${ay}" r="22" fill="${aColor}" opacity="0.88"/>
       <text x="${ax}" y="${ay+1}" text-anchor="middle" dominant-baseline="middle" font-size="13">${icon}</text>
-      <text x="${ax}" y="${ay+30}" text-anchor="middle" fill="var(--text2)" font-size="9" font-family="DM Sans,sans-serif">${area}</text>`;
+      <text x="${ax}" y="${ay+32}" text-anchor="middle" fill="var(--text2)" font-size="9" font-family="DM Sans,sans-serif">${area}</text>`;
 
-    // Goals on this branch
     const goalList=areas[area];
-    const goalR=Math.min(cx,cy)*0.82;
-    const spread=Math.min(0.45, 0.9/Math.max(goalList.length,1));
+    const gBaseR=Math.min(cx,cy)*0.80;
+    const gSpread=Math.min(0.42,0.85/Math.max(goalList.length,1));
+
     goalList.forEach((g,gi)=>{
-      const gAngle=angle+(gi-(goalList.length-1)/2)*spread;
-      const gx=cx+goalR*Math.cos(gAngle);
-      const gy=cy+goalR*Math.sin(gAngle);
+      const gAngle=angle+(gi-(goalList.length-1)/2)*gSpread;
+      const gx=cx+gBaseR*Math.cos(gAngle),gy=cy+gBaseR*Math.sin(gAngle);
       const pct=getGoalPct(g);
-      const gColor=g.done?'#1db95a':pct>=100?'#1db95a':pct>0?aColor:'var(--bg3)';
-      const gStroke=g.id===treeSelectedId?'white':aColor;
-      const gSW=g.id===treeSelectedId?3:1.5;
+      const gColor=g.done?'#1fa355':pct>=100?'#1fa355':pct>0?aColor:'#333355';
+      const isSelected=g.id===treeSelectedId;
 
-      // Line area→goal
-      root.innerHTML+=`<line x1="${ax}" y1="${ay}" x2="${gx}" y2="${gy}" stroke="${aColor}" stroke-width="1.5" opacity="0.3" stroke-dasharray="4 3"/>`;
+      root.innerHTML+=`<line x1="${ax}" y1="${ay}" x2="${gx}" y2="${gy}" stroke="${aColor}" stroke-width="1.5" opacity="0.28" stroke-dasharray="5 3"/>`;
 
-      // Goal node
-      const gR=g.subgoals&&g.subgoals.length?18:15;
-      root.innerHTML+=`<g class="tree-goal-node" style="cursor:pointer" onclick="treeSelectGoal('${g.id}')">
-        <circle cx="${gx}" cy="${gy}" r="${gR}" fill="${gColor}" opacity="0.88" stroke="${gStroke}" stroke-width="${gSW}"/>
-        <text x="${gx}" y="${gy+1}" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="9" font-family="Syne,sans-serif" font-weight="700">${pct}%</text>
-        <text x="${gx}" y="${gy+gR+11}" text-anchor="middle" fill="var(--text)" font-size="9" font-family="DM Sans,sans-serif" style="pointer-events:none;">${g.name.length>14?g.name.slice(0,13)+'…':g.name}</text>
+      const gR=g.subgoals&&g.subgoals.length?19:15;
+      root.innerHTML+=`<g style="cursor:pointer" onclick="treeSelectGoal('${g.id}')">
+        <circle cx="${gx}" cy="${gy}" r="${gR+3}" fill="${isSelected?'white':'transparent'}" opacity="${isSelected?0.15:0}"/>
+        <circle cx="${gx}" cy="${gy}" r="${gR}" fill="${gColor}" opacity="0.9" stroke="${isSelected?'white':aColor}" stroke-width="${isSelected?2.5:1.5}"/>
+        ${g.done?`<text x="${gx}" y="${gy+1}" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="12">✓</text>`:`<text x="${gx}" y="${gy+1}" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="9" font-family="Syne,sans-serif" font-weight="700">${pct}%</text>`}
+        <text x="${gx}" y="${gy+gR+12}" text-anchor="middle" fill="var(--text)" font-size="9" font-family="DM Sans,sans-serif">${g.name.length>15?g.name.slice(0,14)+'…':g.name}</text>
       </g>`;
 
-      // Subgoal nodes
+      // Subgoals as a CHAIN (one after another along the branch direction)
       if(g.subgoals&&g.subgoals.length){
-        const sgR2=Math.min(cx,cy)*0.96;
-        const sgSpread=0.22;
+        const chainStep=38; // px between subgoals
+        const chainAngle=gAngle; // same direction as parent branch
         g.subgoals.forEach((sg,sgi)=>{
-          const sgAngle=gAngle+(sgi-(g.subgoals.length-1)/2)*sgSpread;
-          const sgx=cx+sgR2*Math.cos(sgAngle);
-          const sgy=cy+sgR2*Math.sin(sgAngle);
+          const dist=gBaseR+(sgi+1)*chainStep;
+          const sgx=cx+dist*Math.cos(chainAngle);
+          const sgy=cy+dist*Math.sin(chainAngle);
           const sgPct=sg.target>0?Math.min(100,Math.round(((parseFloat(sg.current)||0)/(parseFloat(sg.target)||1))*100)):0;
-          const sgCol=sg.done?'#1db95a':sgPct>0?aColor:'var(--bg3)';
-          root.innerHTML+=`<line x1="${gx}" y1="${gy}" x2="${sgx}" y2="${sgy}" stroke="${aColor}" stroke-width="1" opacity="0.25" stroke-dasharray="3 3"/>
-            <circle cx="${sgx}" cy="${sgy}" r="8" fill="${sgCol}" opacity="0.75" stroke="${aColor}" stroke-width="1"/>
-            <text x="${sgx}" y="${sgy+1}" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="7" font-weight="700">${sgPct}%</text>`;
+          const sgCol=sg.done?'#1fa355':sgPct>0?aColor:'#333355';
+          const prevDist=gBaseR+(sgi)*chainStep;
+          const prevX=sgi===0?gx:cx+prevDist*Math.cos(chainAngle);
+          const prevY=sgi===0?gy:cy+prevDist*Math.sin(chainAngle);
+          root.innerHTML+=`<line x1="${prevX}" y1="${prevY}" x2="${sgx}" y2="${sgy}" stroke="${aColor}" stroke-width="1" opacity="0.3" stroke-dasharray="3 2"/>
+            <g style="cursor:pointer" onclick="treeSelectGoal('${g.id}')">
+              <circle cx="${sgx}" cy="${sgy}" r="9" fill="${sgCol}" opacity="0.82" stroke="${aColor}" stroke-width="1"/>
+              ${sg.done?`<text x="${sgx}" y="${sgy+1}" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="9">✓</text>`:`<text x="${sgx}" y="${sgy+1}" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="7" font-weight="700">${sgPct}%</text>`}
+              <text x="${sgx}" y="${sgy+16}" text-anchor="middle" fill="var(--text2)" font-size="8" font-family="DM Sans,sans-serif">${sg.name.length>12?sg.name.slice(0,11)+'…':sg.name}</text>
+            </g>`;
         });
       }
     });
   });
+
+  // Apply pan/zoom transform
+  applyTreeTransform();
+  // Setup drag if not already done
+  setupTreeDrag(wrap);
+}
+
+let treeDragSetup=false;
+function setupTreeDrag(wrap){
+  if(treeDragSetup)return;
+  treeDragSetup=true;
+  const svg=document.getElementById('goal-tree-svg');
+
+  // Mouse drag
+  wrap.addEventListener('mousedown',e=>{
+    if(e.target.closest('g'))return; // don't drag when clicking a goal node
+    treeDrag.active=true;
+    treeDrag.startX=e.clientX-treePan.x;
+    treeDrag.startY=e.clientY-treePan.y;
+    wrap.style.cursor='grabbing';
+  });
+  window.addEventListener('mousemove',e=>{
+    if(!treeDrag.active)return;
+    treePan.x=e.clientX-treeDrag.startX;
+    treePan.y=e.clientY-treeDrag.startY;
+    applyTreeTransform();
+  });
+  window.addEventListener('mouseup',()=>{treeDrag.active=false;wrap.style.cursor='grab';});
+
+  // Touch drag
+  wrap.addEventListener('touchstart',e=>{
+    const t=e.touches[0];
+    treeDrag.active=true;
+    treeDrag.startX=t.clientX-treePan.x;
+    treeDrag.startY=t.clientY-treePan.y;
+  },{passive:true});
+  wrap.addEventListener('touchmove',e=>{
+    if(!treeDrag.active)return;
+    const t=e.touches[0];
+    treePan.x=t.clientX-treeDrag.startX;
+    treePan.y=t.clientY-treeDrag.startY;
+    applyTreeTransform();
+  },{passive:true});
+  wrap.addEventListener('touchend',()=>{treeDrag.active=false;});
+
+  // Scroll zoom
+  wrap.addEventListener('wheel',e=>{
+    e.preventDefault();
+    const delta=e.deltaY>0?0.9:1.1;
+    treePan.scale=Math.min(3,Math.max(0.3,treePan.scale*delta));
+    applyTreeTransform();
+  },{passive:false});
+}
+
+function applyTreeTransform(){
+  const svg=document.getElementById('goal-tree-svg');
+  if(svg)svg.style.transform=`translate(${treePan.x}px,${treePan.y}px) scale(${treePan.scale})`;
 }
 
 function treeSelectGoal(id){
   treeSelectedId=id;
   renderGoalTree();
-  // Zoom in
-  if(!treeZoomed){
-    const svg=document.getElementById('goal-tree-svg');
-    const W=svg.parentElement.clientWidth||600;
-    const H=svg.parentElement.clientHeight||520;
-    // Find node position
-    const gs=state.goals||[];
-    const g=gs.find(g=>g.id===id);
-    if(!g)return;
-    const areaKeys=[...new Set(gs.map(g=>g.area))];
-    const ai=areaKeys.indexOf(g.area);
-    const areaR=Math.min(W/2,H/2)*0.52;
-    const angle=(2*Math.PI/areaKeys.length)*ai - Math.PI/2;
-    const cx=W/2,cy=H/2;
-    const ax=cx+areaR*Math.cos(angle);
-    const ay=cy+areaR*Math.sin(angle);
-    // Translate to focus
-    const tx=cx-ax,ty=cy-ay;
-    const svgEl=document.getElementById('goal-tree-svg');
-    svgEl.style.transform=`translate(${tx*0.3}px,${ty*0.3}px) scale(1.4)`;
-    treeZoomed=true;
-    document.getElementById('tree-back-btn').classList.add('show');
-  }
-  // Show detail panel
   renderTreeDetail(id);
 }
 
 function treeResetZoom(){
-  const svgEl=document.getElementById('goal-tree-svg');
-  svgEl.style.transform='';
-  treeZoomed=false;
+  treePan={x:0,y:0,scale:1};
   treeSelectedId=null;
+  const svg=document.getElementById('goal-tree-svg');
+  if(svg)svg.style.transform='';
   document.getElementById('tree-back-btn').classList.remove('show');
   document.getElementById('tree-detail').innerHTML='<div class="tree-detail-empty">Нажми на цель в дереве</div>';
   renderGoalTree();
@@ -2432,46 +2535,69 @@ function treeResetZoom(){
 
 function renderTreeDetail(id){
   const g=(state.goals||[]).find(g=>g.id===id);
-  if(!g)return;
+  if(!g){document.getElementById('tree-detail').innerHTML='<div class="tree-detail-empty">Цель не найдена</div>';return;}
   const pct=getGoalPct(g);
   const barColor=pct>100?'var(--orange)':pct===100?'var(--green)':'linear-gradient(90deg,var(--accent),var(--accent3))';
   const sgs=g.subgoals||[];
+  document.getElementById('tree-back-btn').classList.add('show');
 
-  let sgRows=sgs.length?`<table class="tree-sg-table"><thead><tr><th>Подцель</th><th>Прогресс</th></tr></thead><tbody>${
-    sgs.map(sg=>{
-      const sp=sg.target>0?Math.min(100,Math.round(((parseFloat(sg.current)||0)/(parseFloat(sg.target)||1))*100)):0;
-      return`<tr class="${sg.done?'tree-sg-done':''}">
-        <td>${sg.name}</td>
-        <td><div>${fmtNum(sg.current||0)}/${fmtNum(sg.target||0)} ${sg.unit||''}</div>
-          <div class="tree-sg-mini-bar"><div class="tree-sg-mini-fill" style="width:${sp}%"></div></div>
-        </td>
-      </tr>`;
-    }).join('')
-  }</tbody></table>`:'<div style="font-size:calc(var(--fs)*.85);color:var(--text3);">Подцелей нет</div>';
-
-  // Smart/Grow block
-  const smartHTML=buildSmartBlock(g);
+  let sgRows=sgs.length?`<div style="margin-bottom:8px;">${sgs.map((sg,i)=>{
+    const sp=sg.target>0?Math.min(100,Math.round(((parseFloat(sg.current)||0)/(parseFloat(sg.target)||1))*100)):0;
+    return`<div style="display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:1px solid var(--border);">
+      <div style="width:8px;height:8px;border-radius:50%;background:${sg.done?'var(--green)':'var(--accent)'};flex-shrink:0;"></div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:calc(var(--fs)*.9);${sg.done?'text-decoration:line-through;opacity:.5':''};">${sg.name}</div>
+        <div style="font-size:calc(var(--fs)*.78);color:var(--text3);">${fmtNum(sg.current||0)}/${fmtNum(sg.target||0)} ${sg.unit||''} · ${sp}%</div>
+        <div style="height:3px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-top:2px;"><div style="height:100%;width:${sp}%;background:linear-gradient(90deg,var(--accent),var(--accent3));border-radius:3px;"></div></div>
+      </div>
+      <button class="act-btn" onclick="treeDoneSG('${g.id}','${sg.id}')" title="${sg.done?'Снять отметку':'Отметить выполненным'}" style="font-size:14px;">${sg.done?'↩️':'✅'}</button>
+    </div>`;
+  }).join('')}</div>`:'<div style="font-size:calc(var(--fs)*.85);color:var(--text3);margin-bottom:8px;">Подцелей нет</div>';
 
   document.getElementById('tree-detail').innerHTML=`
-    <div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:8px;">
+    <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:8px;">
       <div class="tree-detail-title">${AREA_ICON[g.area]||'⭐'} ${g.name}</div>
       <div style="display:flex;gap:3px;flex-shrink:0;">
-        <button class="act-btn" onclick="openGoalMo('${g.id}')">✏️</button>
+        <button class="act-btn" onclick="openGoalMo('${g.id}')" title="Редактировать">✏️</button>
+        <button class="act-btn" onclick="openSubgoalMo('${g.id}')" title="Добавить подцель" style="font-size:12px;">➕</button>
       </div>
     </div>
     <div class="tree-detail-meta">
-      <span class="goal-tag horizon-${g.horizon}">${{year:'На год',month:'На месяц',week:'На неделю'}[g.horizon]}</span>
+      <span class="goal-tag horizon-${g.horizon}">${{year:'На год',month:'На месяц',week:'На неделю'}[g.horizon]||g.horizon}</span>
       <span class="goal-tag">${g.area}</span>
       ${g.deadline?goalDlTag(g.deadline):''}
     </div>
-    ${g.desc?`<div style="font-size:calc(var(--fs)*.88);color:var(--text2);margin-bottom:8px;line-height:1.45;">${g.desc}</div>`:''}
+    ${g.desc?`<div style="font-size:calc(var(--fs)*.85);color:var(--text2);margin-bottom:8px;line-height:1.45;">${g.desc}</div>`:''}
     <div class="tree-pbar-wrap">
       <div class="tree-pbar-info"><span>Прогресс</span><span style="${pct>100?'color:var(--orange);font-weight:700':pct===100?'color:var(--green);font-weight:700':''}">${pct}%${pct>100?' 🔥':''}</span></div>
       <div class="tree-pbar-track"><div class="tree-pbar-fill" style="width:${Math.min(pct,100)}%;background:${barColor}"></div></div>
     </div>
-    <div style="margin-bottom:10px;">${sgRows}</div>
-    ${smartHTML}`;
+    <div style="font-size:calc(var(--fs)*.82);color:var(--text3);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:6px;">Подцели (${sgs.length})</div>
+    ${sgRows}
+    <button class="add-btn" style="margin-top:6px;margin-bottom:8px;" onclick="openSubgoalMo('${g.id}')">＋ Добавить подцель</button>
+    <button class="act-btn" onclick="treeDoneGoal('${g.id}')"
+      style="width:100%;padding:8px;border-radius:9px;background:${g.done?'rgba(255,71,87,.12)':'rgba(29,185,90,.12)'};border:1px solid ${g.done?'rgba(255,71,87,.35)':'rgba(29,185,90,.35)'};color:${g.done?'var(--red)':'var(--green)'};font-weight:600;font-size:calc(var(--fs)*.92);">
+      ${g.done?'↩️ Снять отметку выполнения':'✅ Отметить цель выполненной'}
+    </button>`;
 }
+
+function treeDoneGoal(id){
+  const g=(state.goals||[]).find(g=>g.id===id);
+  if(!g)return;
+  g.done=!g.done;
+  save();renderGoalTree();renderTreeDetail(id);renderGoals();
+  showToast(g.done?'Цель выполнена! 🎉':'Отметка снята','ok');
+}
+
+function treeDoneSG(gid,sid){
+  const g=(state.goals||[]).find(g=>g.id===gid);if(!g)return;
+  const sg=(g.subgoals||[]).find(s=>s.id===sid);if(!sg)return;
+  sg.done=!sg.done;if(sg.done)sg.current=sg.target;
+  syncSubgoalsToParent(g);save();renderGoalTree();renderTreeDetail(gid);renderGoals();
+}
+
+window.treeDoneGoal=treeDoneGoal;
+window.treeDoneSG=treeDoneSG;
 
 // ===== SMART / GROW =====
 const SMART_FIELDS=[
@@ -2576,8 +2702,24 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){document.querySelectorAll('.mo-ov.open,.conf-ov.open').forEach(m=>m.classList.remove('open'));closeSettings();}
 });
 
+window.treeSelectGoal=treeSelectGoal;
+window.treeResetZoom=treeResetZoom;
+window.treeDoneGoal=treeDoneGoal;
+window.treeDoneSG=treeDoneSG;
+window.openSubgoalMo=openSubgoalMo;
+window.saveSubgoal=saveSubgoal;
+window.autoCleanDoneTasks=autoCleanDoneTasks;
+window.qDone=qDone;
+window.chStatus=chStatus;
+window.toggleEmoji=toggleEmoji;
+window.insertEmoji=insertEmoji;
+window.setGoalView=setGoalView;
+window.renderGoalTree=renderGoalTree;
+
 // Start app — called last so all functions are defined
 initApp();
+
+}); // end DOMContentLoaded
 </script>
 </body>
 </html>
